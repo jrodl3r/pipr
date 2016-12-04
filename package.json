@@ -2,18 +2,25 @@
   "name": "pipr",
   "version": "1.0.0",
   "description": "mac desktop PiP (picture-in-picture) for YouTube + Vimeo",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "author": "John Rodler",
+  "license": "MIT",
+  "homepage": "https://github.com/jrodl3r/pipr#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jrodl3r/pipr.git"
   },
-  "author": "John Rodler",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jrodl3r/pipr/issues"
   },
-  "homepage": "https://github.com/jrodl3r/pipr#readme"
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^1.4.10",
+    "electron-packager": "^8.3.0"
+  },
+  "dependencies": {
+    "menubar": "^5.1.0"
+  }
 }
