@@ -9,5 +9,9 @@ video.src = 'http://www.youtube.com/embed/Pi3WGM_iXAQ';
 video.setAttribute('frameborder', '0');
 video.setAttribute('allowFullScreen', '');
 
+let drag = document.createElement('div');
+drag.className = 'drag-handle';
+
 container.appendChild(video);
 document.body.appendChild(container);
+document.body.appendChild(drag);
