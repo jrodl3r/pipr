@@ -1,3 +1,3 @@
-# pipr
-mac desktop picture-in-picture
+# pipr 📹
+mac desktop PiP (picture-in-picture) for YouTube + Vimeo
 
