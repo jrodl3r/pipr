@@ -1,4 +1,3 @@
-// const electron = require('electron');
 const Menubar = require('menubar');
 
 let mb = Menubar({
@@ -10,7 +9,6 @@ let mb = Menubar({
 });
 
 mb.on('ready', () => {
-  // console.log('app is ready');
   // const screen = electron.screen.getPrimaryDisplay().workArea;
   const width = 500;
   const height = 280;
@@ -24,10 +22,13 @@ mb.on('ready', () => {
 
 mb.on('after-create-window', () => {
   mb.window.openDevTools();
-  // let contents = mb.window.webContents;
-  // console.log(contents);
-});
+  let wc = mb.window.webContents;
 
-mb.on('focus-lost', () => {
-  console.log('blur');
+  mb.window.on('focus', () => {
+    wc.send('window-focus');
+  });
+
+  mb.on('focus-lost', () => {
+    wc.send('window-blur');
+  });
 });
