@@ -35,6 +35,13 @@ ipc.on('dropped-text', (e, text) => {
   }
 });
 
+$('#close-button').on('click', () => {
+  ipc.send('close-window');
+  $('#video').addClass('isHidden');
+  if ($('#video iframe').length) $('#video iframe').remove();
+  $('#drop-splash').removeClass('isHidden');
+});
+
 // video URL helpers
 function getVideoId(str, prefixes) {
   var cleaned = str.replace(/^(https?:)?(\/\/)(www\.)?/, '');

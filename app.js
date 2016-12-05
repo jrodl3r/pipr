@@ -1,7 +1,7 @@
 "use strict";
 
 const Menubar = require('menubar');
-
+let ipc = require('electron').ipcMain;
 let mb = Menubar({
   alwaysOnTop: true,
   preloadWindow: true,
@@ -40,5 +40,9 @@ mb.on('after-create-window', () => {
   mb.tray.on('drop-text', (e, text) => {
     wc.send('dropped-text', text);
     mb.showWindow();
-  });  
+  });
+});
+
+ipc.on('close-window', () => {
+  mb.hideWindow();
 });
