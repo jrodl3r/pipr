@@ -14,7 +14,9 @@
   },
   "main": "app.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "clean": "rm -rf _pipr-darwin-x64",
+    "build": "electron-packager . _pipr --platform=darwin --arch=x64 --version=0.36.0 --icon=Icon.icns"
   },
   "devDependencies": {
     "electron": "^1.4.10",
