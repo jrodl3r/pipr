@@ -30,6 +30,11 @@ mb.on('after-create-window', () => {
     wc.send('window-blur');
   });
 
+  wc.on('will-navigate', (e, text) => {
+    e.preventDefault();
+    wc.send('dropped-text', text);
+  });
+
   mb.tray.on('drop-text', function (e, text) {
     wc.send('dropped-text', text);
     mb.showWindow();
