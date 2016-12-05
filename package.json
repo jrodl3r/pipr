@@ -15,14 +15,15 @@
   "main": "app.js",
   "scripts": {
     "start": "electron .",
-    "clean": "rm -rf _pipr-darwin-x64",
-    "build": "electron-packager . _pipr --platform=darwin --arch=x64 --version=0.36.0 --icon=Icon.icns"
+    "clean": "rm -rf Pipr-darwin-x64",
+    "build": "electron-packager . Pipr --icon=Icon.icns"
   },
   "devDependencies": {
     "electron": "^1.4.10",
     "electron-packager": "^8.3.0"
   },
   "dependencies": {
+    "jquery": "^3.1.1",
     "menubar": "^5.1.0"
   }
 }

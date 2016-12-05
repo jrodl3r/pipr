@@ -6,37 +6,60 @@
   <style>
     * { margin: 0; padding: 0; border: 0; background: none; }
     body {
-      background: rgba(0,0,0, .25);
-      opacity: 1;
+      font-family: Helvetica, arial;
+      background: rgba(0,0,0, .4);
+      overflow: hidden;
     }
-    .container {
+    #wrapper {
       position: relative;
-      width: 100%;
       height: 0;
+      width: 100%;
       padding-bottom: 56.25%;
     }
-    .video {
+    #video {
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
       height: 100%;
+      width: 100%;
+    }
+    #video iframe {
+      height: 100%;
+      width: 100%;
+    }
+    #drop-splash {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 15px;
+      height: 100%;
+      width: 100%;
+      color: rgba(255,255,255, .4);
     }
     .drag-handle {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: 20px;
-      background: rgba(35,35,35, .9);
+      height: 15px;
+      background: rgba(35,35,35, .7);
       -webkit-app-region: drag;
     }
     .isBlurred .drag-handle {
-      background: rgba(0,0,0, .5);
+      background: linear-gradient(to top, transparent 0%, rgba(0,0,0, .25) 100%);
     }
+    .isHidden { display: none !important; }
   </style>
 </head>
 <body>
+  <div id="wrapper">
+    <div id="drop-splash">
+      <span>Drop YouTube / Vimeo Link Here</span>
+    </div>
+    <div id="video" class="isHidden"></div>
+  </div>
+  <div class="drag-handle"></div>
   <script>
     require('./index.js');
   </script>
