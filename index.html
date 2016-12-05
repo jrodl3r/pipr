@@ -36,6 +36,9 @@
       height: 100%;
       width: 100%;
       color: rgba(255,255,255, .4);
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: default;
     }
     .drag-handle {
       position: absolute;
@@ -53,14 +56,18 @@
       display: block;
       height: 15px;
       width: 15px;
-      padding-left: 3px;
+      padding-left: 2px;
       line-height: 16px;
       font-size: 12px;
       font-weight: 300;
       color: rgba(255,255,255, .3);
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: default;
+      transition: .3s;
     }
     #close-button:hover {
-      color: rgba(255,255,255, .6);
+      color: rgba(255,255,255, .5);
     }
     .isBlurred #close-button {
       display: none;
