@@ -40,7 +40,7 @@
       user-select: none;
       cursor: default;
     }
-    .drag-handle {
+    #control-bar {
       position: absolute;
       top: 0;
       left: 0;
@@ -49,21 +49,19 @@
       background: rgba(35,35,35, .7);
       -webkit-app-region: drag;
     }
-    .isBlurred .drag-handle {
+    .isBlurred #control-bar {
       background: linear-gradient(to top, transparent 0%, rgba(0,0,0, .25) 100%);
     }
     #close-button {
       display: block;
       height: 15px;
       width: 15px;
-      padding-left: 2px;
-      line-height: 16px;
-      font-size: 12px;
+      padding-left: 3px;
+      line-height: 15px;
+      font-size: 10px;
       font-weight: 300;
       color: rgba(255,255,255, .3);
       -webkit-user-select: none;
-      user-select: none;
-      cursor: default;
       transition: .3s;
     }
     #close-button:hover {
@@ -82,7 +80,7 @@
     </div>
     <div id="video" class="isHidden"></div>
   </div>
-  <div class="drag-handle">
+  <div id="control-bar">
     <div id="close-button">&#9447;</div>
   </div>
   <script>
