@@ -1,7 +1,10 @@
 "use strict";
 
 const Menubar = require('menubar');
+const { Menu } = require('electron');
+
 let ipc = require('electron').ipcMain;
+
 let mb = Menubar({
   alwaysOnTop: true,
   preloadWindow: true,
@@ -16,6 +19,12 @@ mb.on('create-window', () => {
 });
 
 mb.on('after-create-window', () => {
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Preferences', type: 'normal' },
+    // { label: '', type: 'separator' },
+    { label: 'Quit', type: 'normal', click () { mb.app.quit(); } }
+  ]);
+
   let wc = mb.window.webContents;
 
   // mb.window.openDevTools();
@@ -55,6 +64,10 @@ mb.on('after-create-window', () => {
       mb.showWindow();
     }
     wc.send('dropped-text', text);
+  });
+
+  mb.tray.on('right-click', () => {
+    mb.tray.popUpContextMenu(contextMenu);
   });
 });
 
