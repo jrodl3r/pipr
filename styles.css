@@ -1,0 +1,93 @@
+* { margin: 0; padding: 0; border: 0; background: none; }
+
+body {
+  font-family: Helvetica, arial;
+  background: rgba(0,0,0, .4);
+  overflow: hidden;
+}
+
+#wrapper {
+  position: relative;
+  height: 0;
+  width: 100%;
+  padding-bottom: 56.25%;
+}
+
+#video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#video iframe {
+  height: 100%;
+  width: 100%;
+}
+
+#drop-splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 15px;
+  height: 100%;
+  width: 100%;
+  color: rgba(255,255,255, .4);
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+#control-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: rgba(35,35,35, .7);
+  -webkit-app-region: drag;
+}
+
+.isBlurred #control-bar {
+  background: linear-gradient(to top, transparent 0%, rgba(0,0,0, .25) 100%);
+}
+
+#close-button {
+  display: block;
+  height: 15px;
+  width: 15px;
+  padding-left: 3px;
+  line-height: 15px;
+  font-size: 10px;
+  font-weight: 300;
+  color: rgba(255,255,255, .3);
+  -webkit-user-select: none;
+  transition: .3s;
+}
+
+#close-button:hover {
+  color: rgba(255,255,255, .5);
+}
+
+.isBlurred #close-button {
+  display: none;
+}
+
+#click-sheild {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transition: .3s 0s;
+}
+
+.isBlurred #click-sheild {
+  width: 100%;
+  height: 100%;
+  transition: 0s;
+}
+
+.isHidden { display: none !important; }
