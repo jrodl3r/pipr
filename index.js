@@ -42,6 +42,10 @@ $('#close-button').on('click', () => {
   $('#drop-splash').removeClass('isHidden');
 });
 
+$('#click-sheild').on('click', (e) => {
+  e.preventDefault();
+});
+
 // video URL helpers
 function getVideoId(str, prefixes) {
   var cleaned = str.replace(/^(https?:)?(\/\/)(www\.)?/, '');
