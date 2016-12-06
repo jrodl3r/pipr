@@ -15,12 +15,15 @@
   "main": "app.js",
   "scripts": {
     "start": "electron .",
+    "lint": "eslint ./*.js",
     "clean": "rm -rf Pipr-darwin-x64",
-    "build": "electron-packager . Pipr --icon=Icon.icns"
+    "build": "npm run clean && npm run lint && electron-packager . Pipr --icon=Icon.icns"
   },
   "devDependencies": {
+    "babel-eslint": "^7.1.1",
     "electron": "^1.4.10",
-    "electron-packager": "^8.3.0"
+    "electron-packager": "^8.3.0",
+    "eslint": "^3.11.1"
   },
   "dependencies": {
     "jquery": "^3.1.1",
