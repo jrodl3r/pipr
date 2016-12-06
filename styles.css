@@ -1,3 +1,8 @@
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 * { margin: 0; padding: 0; border: 0; background: none; }
 
 body {
@@ -15,6 +20,7 @@ body {
 
 #video {
   position: absolute;
+  z-index: 1;
   top: 0;
   left: 0;
   height: 100%;
@@ -31,7 +37,7 @@ body {
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: 15px;
+  z-index: 2;
   height: 100%;
   width: 100%;
   color: rgba(255,255,255, .4);
@@ -40,8 +46,39 @@ body {
   cursor: default;
 }
 
+.isLoading #drop-splash span {
+  display: none;
+}
+
+#loading-splash {
+  display: none;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+#loading-splash .spinner {
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  border: .25rem solid rgba(255,255,255, 0.2);
+  border-top-color: rgb(255,255,255);
+  animation: spin 1s infinite linear;
+}
+
+.isLoading #loading-splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 5;
+  height: 100%;
+  width: 100%;
+  opacity: .7;
+}
+
 #control-bar {
   position: absolute;
+  z-index: 3;
   top: 0;
   left: 0;
   width: 100%;
@@ -78,6 +115,7 @@ body {
 
 #click-sheild {
   position: absolute;
+  z-index: 4;
   top: 0;
   left: 0;
   width: 0;

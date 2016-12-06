@@ -12,6 +12,14 @@ ipc.on('window-focus', () => {
   $('body').removeClass('isBlurred');
 });
 
+ipc.on('start-loading', () => {
+  $('body').addClass('isLoading');
+});
+
+ipc.on('stop-loading', () => {
+  $('body').removeClass('isLoading');
+});
+
 ipc.on('dropped-text', (e, text) => {
   if (/youtu/.test(text) || /vimeo/.test(text)) {
     let id = /youtu/.test(text) ? getYouTubeId(text) : getVimeoId(text);
