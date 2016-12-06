@@ -14,9 +14,9 @@
   },
   "main": "app.js",
   "scripts": {
-    "start": "electron .",
     "lint": "eslint ./*.js",
     "clean": "rm -rf Pipr-darwin-x64",
+    "start": "npm run lint && electron .",
     "build": "npm run clean && npm run lint && electron-packager . Pipr --icon=Icon.icns"
   },
   "devDependencies": {
