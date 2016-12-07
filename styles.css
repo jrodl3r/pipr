@@ -83,9 +83,14 @@ body {
   left: 0;
   width: 100%;
   height: 15px;
-  background: rgba(35,35,35, .7);
-  transition: .3s;
+  background: rgba(35,35,35, .6);
+  transition: .75s;
   -webkit-app-region: drag;
+}
+
+#control-bar:hover {
+  background: rgba(20,20,20, .8);
+  transition: .3s;
 }
 
 .isBlurred #control-bar {
@@ -102,7 +107,7 @@ body {
   font-weight: 300;
   color: rgba(255,255,255, .3);
   -webkit-user-select: none;
-  transition: .3s;
+  transition: opacity .3s, color .3s, height 0s;
 }
 
 #close-button:hover {
@@ -110,7 +115,9 @@ body {
 }
 
 .isBlurred #close-button {
-  display: none;
+  height: 0;
+  opacity: 0;
+  transition: opacity 1s, height 1s 0s !important;
 }
 
 #click-sheild {
