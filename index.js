@@ -23,7 +23,7 @@ ipc.on('stop-loading', () => {
 ipc.on('dropped-text', (e, text) => {
   if (/youtu/.test(text) || /vimeo/.test(text)) {
     let id = /youtu/.test(text) ? getYouTubeId(text) : getVimeoId(text);
-    if (id) {
+    if (id && !/(\/)/.test(id)) {
       let link = /youtu/.test(text)
         ? `https://www.youtube.com/embed/${id}?autoplay=1`
         : `https://player.vimeo.com/video/${id}?autoplay=1`;
