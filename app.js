@@ -1,14 +1,17 @@
 "use strict";
 
+const fs = require('fs');
 const Menubar = require('menubar');
 const { Menu } = require('electron');
 
 let ipc = require('electron').ipcMain;
+let prefs = JSON.parse(fs.readFileSync('prefs.json'));
 let links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/', 'vimeo.com/', 'player.vimeo.com/video/', 'player.vimeo.com/'];
 let blocked = ['/login/like', '/login/watch-later', '/share/facebook', '/share/twitter', '/share/tumblr', 'twitter.com/'];
 
 let mb = Menubar({
-  alwaysOnTop: true,
+  alwaysOnTop: prefs.alwaysOnTop,
+  showOnAllWorkspaces: prefs.showOnAllWorkspaces,
   preloadWindow: true,
   transparent: true
   // tooltip: 'Drop YouTube + Vimeo Links Here'
