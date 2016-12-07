@@ -1,20 +1,38 @@
 "use strict";
 
 const fs = require('fs');
+const storage = require('electron-storage');
 const Menubar = require('menubar');
 const { Menu } = require('electron');
-
-let ipc = require('electron').ipcMain;
-let prefs = JSON.parse(fs.readFileSync('prefs.json'));
-let links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/', 'vimeo.com/', 'player.vimeo.com/video/', 'player.vimeo.com/'];
-let blocked = ['/login/like', '/login/watch-later', '/share/facebook', '/share/twitter', '/share/tumblr', 'twitter.com/'];
+const ipc = require('electron').ipcMain;
+const links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/',
+               'vimeo.com/', 'player.vimeo.com/video/', 'player.vimeo.com/'];
+const buttons = ['/login/like', '/login/watch-later', '/share/facebook', '/share/twitter',
+                 '/share/tumblr', 'twitter.com/'];
 
 let mb = Menubar({
-  alwaysOnTop: prefs.alwaysOnTop,
-  showOnAllWorkspaces: prefs.showOnAllWorkspaces,
+  alwaysOnTop: true,
+  showOnAllWorkspaces: true,
   preloadWindow: true,
   transparent: true
   // tooltip: 'Drop YouTube + Vimeo Links Here'
+});
+
+mb.on('ready', () => {
+  let prefsPath = mb.app.getPath('userData') + '/prefs.json';
+  let defaultPrefs = { alwaysOnTop: true, showOnAllWorkspaces: true };
+
+  storage.isPathExists(prefsPath, (itDoes) => {
+    if (itDoes) {
+      storage.get(prefsPath)
+        .then(data => { setPrefs(data); })
+        .catch(err => { console.error(err); });
+    } else {
+      storage.set(prefsPath, defaultPrefs)
+        .then(() => { setPrefs(defaultPrefs); })
+        .catch(err => { console.error(err); });
+    }
+  });
 });
 
 mb.on('create-window', () => {
@@ -30,8 +48,8 @@ mb.on('after-create-window', () => {
       click () {
         if (!mb.window.isVisible()) { mb.showWindow(); }
         wc.send('toggle-prefs');
-      } },
-    { label: 'Quit', type: 'normal', click () { mb.app.quit(); } }
+      }},
+    { label: 'Quit', type: 'normal', click () { mb.app.quit(); }}
   ]);
 
   // mb.window.openDevTools();
@@ -55,10 +73,10 @@ mb.on('after-create-window', () => {
     e.preventDefault();
     for (let x = 0; x < links.length; x++) {
       if (text.indexOf(links[x]) > -1) {
-        for (let y = 0; y < blocked.length; y++) {
-          if (text.indexOf(blocked[y]) !== -1) {
+        for (let y = 0; y < buttons.length; y++) {
+          if (text.indexOf(buttons[y]) !== -1) {
             break;
-          } else if (y === (blocked.length - 1)) {
+          } else if (y === (buttons.length - 1)) {
             wc.send('dropped-text', text);
           }
         }
@@ -89,3 +107,8 @@ mb.on('after-create-window', () => {
 ipc.on('close-window', () => {
   mb.hideWindow();
 });
+
+function setPrefs(prefs) {
+  mb.setOption('alwaysOnTop', prefs.alwaysOnTop);
+  mb.setOption('showOnAllWorkspaces', prefs.showOnAllWorkspaces);
+}
