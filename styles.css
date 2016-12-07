@@ -42,7 +42,6 @@ body {
   width: 100%;
   color: rgba(255,255,255, .4);
   -webkit-user-select: none;
-  user-select: none;
   cursor: default;
 }
 
@@ -51,9 +50,25 @@ body {
 }
 
 #loading-splash {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
   opacity: 0;
-  transition: opacity .3s;
+  overflow: hidden;
+  transition: opacity .5s, height 0s .5s, width 0s .5s;
+}
+
+.isLoading #loading-splash {
+  height: 100%;
+  width: 100%;
+  opacity: .7;
+  transition: opacity .5s, height 0s, width 0s;
 }
 
 #loading-splash .spinner {
@@ -65,36 +80,25 @@ body {
   animation: spin 1s infinite linear;
 }
 
-.isLoading #loading-splash {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  z-index: 5;
-  height: 100%;
-  width: 100%;
-  opacity: .7;
-}
-
 #control-bar {
   position: absolute;
-  z-index: 3;
+  z-index: 100;
   top: 0;
   left: 0;
   width: 100%;
   height: 15px;
-  background: rgba(35,35,35, .6);
-  transition: .75s;
+  background: rgba(30,30,30, .7);
+  opacity: 1;
+  transition: .5s;
   -webkit-app-region: drag;
 }
 
 #control-bar:hover {
-  background: rgba(20,20,20, .8);
-  transition: .3s;
+  background: rgba(20,20,20, .9);
 }
 
 .isBlurred #control-bar {
-  background: transparent;
+  opacity: 0;
 }
 
 #close-button {
@@ -107,33 +111,50 @@ body {
   font-weight: 300;
   color: rgba(255,255,255, .3);
   -webkit-user-select: none;
-  transition: opacity .3s, color .3s, height 0s;
+  transition: color .3s;
 }
 
 #close-button:hover {
   color: rgba(255,255,255, .5);
 }
 
-.isBlurred #close-button {
-  height: 0;
-  opacity: 0;
-  transition: opacity 1s, height 1s 0s !important;
-}
-
 #click-sheild {
   position: absolute;
-  z-index: 4;
+  z-index: 200;
   top: 0;
   left: 0;
   width: 0;
   height: 0;
-  transition: .3s 0s;
+  transition: 0s .3s;
 }
 
 .isBlurred #click-sheild {
   width: 100%;
   height: 100%;
   transition: 0s;
+}
+
+#prefs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  color: #FFF;
+  background: rgba(0,0,0, .7);
+  opacity: 0;
+  transition: opacity .3s, height 0s .3s, width 0s .3s;
+}
+
+#prefs.isActive {
+  height: 100%;
+  width: 100%;
+  opacity: 1;
+  transition: opacity .3s, height 0s, width 0s;
 }
 
 .isHidden { display: none !important; }

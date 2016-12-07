@@ -4,20 +4,17 @@ let ipc = require('electron').ipcRenderer;
 let $ = require('jquery');
 
 // events
-ipc.on('window-blur', () => {
-  $('body').addClass('isBlurred');
-});
+ipc.on('window-blur', () => { $('body').addClass('isBlurred'); });
+ipc.on('window-focus', () => { $('body').removeClass('isBlurred'); });
+ipc.on('start-loading', () => { $('body').addClass('isLoading'); });
+ipc.on('stop-loading', () => { $('body').removeClass('isLoading'); });
 
-ipc.on('window-focus', () => {
-  $('body').removeClass('isBlurred');
-});
-
-ipc.on('start-loading', () => {
-  $('body').addClass('isLoading');
-});
-
-ipc.on('stop-loading', () => {
-  $('body').removeClass('isLoading');
+ipc.on('toggle-prefs', () => {
+  if (!$('#prefs').hasClass('isActive')) {
+    $('#prefs').addClass('isActive');
+  } else {
+    $('#prefs').removeClass('isActive');
+  }
 });
 
 ipc.on('dropped-text', (e, text) => {
@@ -27,32 +24,33 @@ ipc.on('dropped-text', (e, text) => {
       let link = /youtu/.test(text)
         ? `https://www.youtube.com/embed/${id}?autoplay=1`
         : `https://player.vimeo.com/video/${id}?autoplay=1`;
-      if ($('#video iframe').length) $('#video iframe').remove();
+
+      if ($('#video iframe').length) { $('#video iframe').remove(); }
       $('#drop-splash').addClass('isHidden');
       $(`<iframe src="${link}" frameborder="0" scrolling="no" allowFullScreen></iframe>`).appendTo('#video');
       $('#video').removeClass('isHidden');
     } else {
-      $('#video').addClass('isHidden');
       $('#drop-splash span').text('Invalid YouTube / Vimeo Link ID');
       $('#drop-splash').removeClass('isHidden');
     }
   } else {
-    $('#video').addClass('isHidden');
     $('#drop-splash span').text('Invalid YouTube / Vimeo URL');
     $('#drop-splash').removeClass('isHidden');
   }
 });
 
 $('#close-button').on('click', () => {
-  ipc.send('close-window');
   $('#video').addClass('isHidden');
-  if ($('#video iframe').length) $('#video iframe').remove();
+  if ($('#prefs').hasClass('isActive')) { $('#prefs').removeClass('isActive'); }
+  if ($('#video iframe').length) { $('#video iframe').remove(); }
   $('#drop-splash').removeClass('isHidden');
+  $('#drop-splash span').text('Drop YouTube / Vimeo Links Here');
+  ipc.send('close-window');
 });
 
-$('#click-sheild').on('click', (e) => {
-  e.preventDefault();
-});
+$('#click-sheild').on('click', (e) => { e.preventDefault(); });
+
+// TODO: Add hide-drop-splash button + event (to clear overlay above already loaded video)
 
 // video URL helpers
 function getVideoId(str, prefixes) {

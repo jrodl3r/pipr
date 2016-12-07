@@ -24,12 +24,15 @@ mb.on('create-window', () => {
 });
 
 mb.on('after-create-window', () => {
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Preferences', type: 'normal' },
+  let wc = mb.window.webContents;
+  let contextMenu = Menu.buildFromTemplate([
+    { label: 'Preferences', type: 'normal',
+      click () {
+        if (!mb.window.isVisible()) { mb.showWindow(); }
+        wc.send('toggle-prefs');
+      } },
     { label: 'Quit', type: 'normal', click () { mb.app.quit(); } }
   ]);
-
-  let wc = mb.window.webContents;
 
   // mb.window.openDevTools();
   // mb.window.setMaximumSize(960, 540);
@@ -56,7 +59,6 @@ mb.on('after-create-window', () => {
           if (text.indexOf(blocked[y]) !== -1) {
             break;
           } else if (y === (blocked.length - 1)) {
-            console.log('> ' + text);
             wc.send('dropped-text', text);
           }
         }
