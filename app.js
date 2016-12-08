@@ -5,22 +5,29 @@ const storage = require('electron-storage');
 const Menubar = require('menubar');
 const { Menu } = require('electron');
 const ipc = require('electron').ipcMain;
+
 const links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/',
                'vimeo.com/', 'player.vimeo.com/video/', 'player.vimeo.com/'];
 const buttons = ['/login/like', '/login/watch-later', '/share/facebook', '/share/twitter',
                  '/share/tumblr', 'twitter.com/'];
+
+let defaultPrefs = {
+  alwaysOnTop: true,
+  showOnAllWorkspaces: true,
+  window: { alwaysOnTop: true }
+};
 
 let mb = Menubar({
   alwaysOnTop: true,
   showOnAllWorkspaces: true,
   preloadWindow: true,
   transparent: true
-  // tooltip: 'Drop YouTube + Vimeo Links Here'
 });
 
+
+// events
 mb.on('ready', () => {
   let prefsPath = mb.app.getPath('userData') + '/prefs.json';
-  let defaultPrefs = { alwaysOnTop: true, showOnAllWorkspaces: true };
 
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
@@ -110,21 +117,48 @@ ipc.on('close-window', () => { mb.hideWindow(); });
 function setPrefs(prefs) {
   mb.setOption('alwaysOnTop', prefs.alwaysOnTop);
   mb.setOption('showOnAllWorkspaces', prefs.showOnAllWorkspaces);
+  if (prefs.window.alwaysOnTop) {
+    mb.window.setAlwaysOnTop(true);
+  } else { mb.window.setAlwaysOnTop(false, 'floating'); }
+  // TODO: default window size + position
 }
 
+
+// helpers
 exports.getPref = (pref) => { return mb.getOption(pref); }
+exports.getAlwaysOnTop = () => { return mb.window.isAlwaysOnTop(); }
 
 exports.toggleAutohide = () => {
   let prefsPath = mb.app.getPath('userData') + '/prefs.json';
 
   mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
   mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
+
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
         .then(data => {
           data.alwaysOnTop = mb.getOption('alwaysOnTop');
           data.showOnAllWorkspaces = mb.getOption('showOnAllWorkspaces');
+          storage.set(prefsPath, data)
+            .catch(err => { console.error(err); });
+        })
+        .catch(err => { console.error(err); });
+    }
+  });
+}
+
+exports.toggleAlwaysOnTop = () => {
+  let prefsPath = mb.app.getPath('userData') + '/prefs.json';
+
+  if (mb.window.isAlwaysOnTop()) { mb.window.setAlwaysOnTop(false, 'floating'); }
+  else { mb.window.setAlwaysOnTop(true); }
+
+  storage.isPathExists(prefsPath, (itDoes) => {
+    if (itDoes) {
+      storage.get(prefsPath)
+        .then(data => {
+          data.window.alwaysOnTop = mb.window.isAlwaysOnTop();
           storage.set(prefsPath, data)
             .catch(err => { console.error(err); });
         })

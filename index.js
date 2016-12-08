@@ -11,14 +11,12 @@ ipc.on('start-loading', () => { $('body').addClass('isLoading'); });
 ipc.on('stop-loading', () => { $('body').removeClass('isLoading'); });
 
 ipc.on('toggle-prefs', () => {
-  if (!$('#prefs').hasClass('isActive')) {
-    $('#prefs').addClass('isActive');
-  } else {
-    $('#prefs').removeClass('isActive');
-  }
+  if (!$('#prefs').hasClass('isActive')) { $('#prefs').addClass('isActive'); }
+  else { $('#prefs').removeClass('isActive'); }
 });
 
 ipc.on('dropped-text', (e, text) => {
+  $('#prefs').removeClass('isActive');
   if (/youtu/.test(text) || /vimeo/.test(text)) {
     let id = /youtu/.test(text) ? getYouTubeId(text) : getVimeoId(text);
     if (id && !/(\/)/.test(id)) {
@@ -41,27 +39,28 @@ ipc.on('dropped-text', (e, text) => {
 });
 
 $('#close-button').on('click', () => {
-  if ($('#prefs').hasClass('isActive')) {
-    $('#prefs').removeClass('isActive');
-  } else {
-    $('#video').addClass('isHidden');
-    if ($('#video iframe').length) { $('#video iframe').remove(); }
-    $('#drop-splash').removeClass('isHidden');
-    $('#drop-splash span').html('Drop YouTube or Vimeo Links Here<span class="sub-splash">(or the menubar icon)</span>');
-    ipc.send('close-window');
-  }
+  $('#prefs').removeClass('isActive');
+  $('#video').addClass('isHidden');
+  if ($('#video iframe').length) { $('#video iframe').remove(); }
+  $('#drop-splash').removeClass('isHidden');
+  $('#drop-splash span').html('Drop YouTube or Vimeo Links Here<span class="sub-splash">(or the menubar icon)</span>');
+  ipc.send('close-window');
 });
 
 $('#click-sheild').on('click', (e) => { e.preventDefault(); });
-
-// TODO: Add hide-drop-splash button + event (to clear overlay above already loaded videos)
+$('#prefs').on('click', () => { $('#prefs').removeClass('isActive'); });
+$('#prefs .inner').on('click', (e) => { e.stopPropagation(); });
 
 // prefs
 const alwaysOnTop = app.getPref('alwaysOnTop');
 const showOnAllWorkspaces = app.getPref('showOnAllWorkspaces');
+const winAlwaysOnTop = app.getAlwaysOnTop();
 
 if (!alwaysOnTop && !showOnAllWorkspaces) { $('#autohide-switch').attr('checked', 'checked'); }
 $('#autohide-switch').on('click', () => { app.toggleAutohide(); });
+
+if (winAlwaysOnTop) { $('#alwaysontop-switch').attr('checked', 'checked'); }
+$('#alwaysontop-switch').on('click', () => { app.toggleAlwaysOnTop(); });
 
 // video URL helpers
 function getVideoId(str, prefixes) {
