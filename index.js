@@ -31,11 +31,11 @@ ipc.on('dropped-text', (e, text) => {
       $(`<iframe src="${link}" frameborder="0" scrolling="no" allowFullScreen></iframe>`).appendTo('#video');
       $('#video').removeClass('isHidden');
     } else {
-      $('#drop-splash span').text('Invalid YouTube / Vimeo Link ID');
+      $('#drop-splash span').html('Invalid YouTube / Vimeo Link ID');
       $('#drop-splash').removeClass('isHidden');
     }
   } else {
-    $('#drop-splash span').text('Invalid YouTube / Vimeo URL');
+    $('#drop-splash span').html('Invalid YouTube / Vimeo URL');
     $('#drop-splash').removeClass('isHidden');
   }
 });
@@ -47,7 +47,7 @@ $('#close-button').on('click', () => {
     $('#video').addClass('isHidden');
     if ($('#video iframe').length) { $('#video iframe').remove(); }
     $('#drop-splash').removeClass('isHidden');
-    $('#drop-splash span').text('Drop YouTube / Vimeo Links Here');
+    $('#drop-splash span').html('Drop YouTube or Vimeo Links Here<span class="sub-splash">(or the menubar icon)</span>');
     ipc.send('close-window');
   }
 });

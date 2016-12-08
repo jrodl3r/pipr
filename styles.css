@@ -41,12 +41,25 @@ body {
   height: 100%;
   width: 100%;
   color: rgba(255,255,255, .4);
+  font-size: 15px;
+  font-weight: 300;
+  text-align: center;
   -webkit-user-select: none;
   cursor: default;
 }
 
 .isLoading #drop-splash span {
   display: none;
+}
+
+#drop-splash .sub-splash {
+  display: block;
+  padding: 10px 5px 0;
+  color: rgba(255,255,255, .25);
+  font-size: 12px;
+  font-weight: 200;
+  text-align: center;
+  text-shadow: 0 0 5px rgba(0,0,0, .7);
 }
 
 #loading-splash {
