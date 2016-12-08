@@ -1,5 +1,6 @@
 "use strict";
 
+const app = require('electron').remote.require('./app');
 let ipc = require('electron').ipcRenderer;
 let $ = require('jquery');
 
@@ -40,17 +41,27 @@ ipc.on('dropped-text', (e, text) => {
 });
 
 $('#close-button').on('click', () => {
-  $('#video').addClass('isHidden');
-  if ($('#prefs').hasClass('isActive')) { $('#prefs').removeClass('isActive'); }
-  if ($('#video iframe').length) { $('#video iframe').remove(); }
-  $('#drop-splash').removeClass('isHidden');
-  $('#drop-splash span').text('Drop YouTube / Vimeo Links Here');
-  ipc.send('close-window');
+  if ($('#prefs').hasClass('isActive')) {
+    $('#prefs').removeClass('isActive');
+  } else {
+    $('#video').addClass('isHidden');
+    if ($('#video iframe').length) { $('#video iframe').remove(); }
+    $('#drop-splash').removeClass('isHidden');
+    $('#drop-splash span').text('Drop YouTube / Vimeo Links Here');
+    ipc.send('close-window');
+  }
 });
 
 $('#click-sheild').on('click', (e) => { e.preventDefault(); });
 
-// TODO: Add hide-drop-splash button + event (to clear overlay above already loaded video)
+// TODO: Add hide-drop-splash button + event (to clear overlay above already loaded videos)
+
+// prefs
+const alwaysOnTop = app.getPref('alwaysOnTop');
+const showOnAllWorkspaces = app.getPref('showOnAllWorkspaces');
+
+if (!alwaysOnTop && !showOnAllWorkspaces) { $('#autohide-switch').attr('checked', 'checked'); }
+$('#autohide-switch').on('click', () => { app.toggleAutohide(); });
 
 // video URL helpers
 function getVideoId(str, prefixes) {

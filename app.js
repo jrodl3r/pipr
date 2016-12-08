@@ -93,6 +93,7 @@ mb.on('after-create-window', () => {
       mb.setOption('y', pos[1]);
     } else {
       let trayPos = mb.positioner.calculate('trayCenter', mb.tray.getBounds());
+
       mb.setOption('x', trayPos.x);
       mb.setOption('y', 25);
       mb.window.setSize(500, 280);
@@ -104,11 +105,30 @@ mb.on('after-create-window', () => {
   mb.tray.on('right-click', () => { mb.tray.popUpContextMenu(contextMenu); });
 });
 
-ipc.on('close-window', () => {
-  mb.hideWindow();
-});
+ipc.on('close-window', () => { mb.hideWindow(); });
 
 function setPrefs(prefs) {
   mb.setOption('alwaysOnTop', prefs.alwaysOnTop);
   mb.setOption('showOnAllWorkspaces', prefs.showOnAllWorkspaces);
+}
+
+exports.getPref = (pref) => { return mb.getOption(pref); }
+
+exports.toggleAutohide = () => {
+  let prefsPath = mb.app.getPath('userData') + '/prefs.json';
+
+  mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
+  mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
+  storage.isPathExists(prefsPath, (itDoes) => {
+    if (itDoes) {
+      storage.get(prefsPath)
+        .then(data => {
+          data.alwaysOnTop = mb.getOption('alwaysOnTop');
+          data.showOnAllWorkspaces = mb.getOption('showOnAllWorkspaces');
+          storage.set(prefsPath, data)
+            .catch(err => { console.error(err); });
+        })
+        .catch(err => { console.error(err); });
+    }
+  });
 }
