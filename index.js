@@ -15,6 +15,12 @@ ipc.on('toggle-prefs', () => {
   else { $('#prefs').removeClass('isActive'); }
 });
 
+ipc.on('hide-prefs', () => {
+  if ($('#prefs').hasClass('isActive') && !$('body').hasClass('isBlurred')) {
+    $('#prefs').removeClass('isActive');
+  }
+});
+
 ipc.on('dropped-text', (e, text) => {
   if (/youtu/.test(text) || /vimeo/.test(text)) {
     let id = /youtu/.test(text) ? getYouTubeId(text) : getVimeoId(text);

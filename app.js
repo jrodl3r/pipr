@@ -3,7 +3,7 @@
 const fs = require('fs');
 const storage = require('electron-storage');
 const Menubar = require('menubar');
-const { Menu } = require('electron');
+const { Menu, globalShortcut } = require('electron');
 const ipc = require('electron').ipcMain;
 
 const links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/',
@@ -92,6 +92,7 @@ mb.on('after-create-window', () => {
     }
   });
 
+  // tray
   mb.tray.on('drop-text', (e, text) => {
     let pos = mb.window.getPosition();
 
@@ -110,9 +111,20 @@ mb.on('after-create-window', () => {
   });
 
   mb.tray.on('right-click', () => { mb.tray.popUpContextMenu(contextMenu); });
+
+  // shortcuts
+  const regEscKey = globalShortcut.register('Esc', () => {
+    if (mb.window.isFullScreen()) {
+      mb.window.setAspectRatio(16/9, { height: 0, width: 0 });
+      mb.window.setFullScreen(false);
+    } else { wc.send('hide-prefs'); }
+  })
+  if (!regEscKey) { console.log('esc-key registration failed'); }
+
+  mb.app.on('will-quit', () => { globalShortcut.unregisterAll(); });
 });
 
-ipc.on('close-window', () => { mb.hideWindow(); });
+// remotes
 ipc.on('toggle-fullscreen', () => {
   if (mb.window.isFullScreen()) {
     mb.window.setAspectRatio(16/9, { height: 0, width: 0 });
@@ -123,6 +135,9 @@ ipc.on('toggle-fullscreen', () => {
   }
 });
 
+ipc.on('close-window', () => { mb.hideWindow(); });
+
+// preferences
 function setPrefs(prefs) {
   mb.setOption('alwaysOnTop', prefs.alwaysOnTop);
   mb.setOption('showOnAllWorkspaces', prefs.showOnAllWorkspaces);
@@ -131,7 +146,6 @@ function setPrefs(prefs) {
   } else { mb.window.setAlwaysOnTop(false, 'floating'); }
   // TODO: default window size + position
 }
-
 
 // helpers
 exports.getPref = (pref) => { return mb.getOption(pref); }
