@@ -17,6 +17,7 @@ let defaultPrefs = {
   showOnAllWorkspaces: true,
   window: { alwaysOnTop: true }
 };
+let defaultPos = { x: 0, y: 0 };
 
 let mb = Menubar({
   alwaysOnTop: true,
@@ -67,6 +68,20 @@ mb.on('after-create-window', () => {
   mb.window.loadURL(`file://${__dirname}/index.html`);
 
   mb.window.on('focus', () => { wc.send('window-focus'); });
+
+  mb.on('hide', () => {
+    let pos = mb.window.getPosition();
+    defaultPos.x = pos[0];
+    defaultPos.y = pos[1];
+  });
+
+  mb.on('show', () => {
+    if (defaultPos.x !== 0 && defaultPos.x !== 0) {
+      mb.setOption('x', defaultPos.x);
+      mb.setOption('y', defaultPos.y);
+    }
+  });
+
   mb.on('focus-lost', () => { wc.send('window-blur'); });
 
   wc.on('did-start-loading', () => { wc.send('start-loading'); });
