@@ -114,8 +114,13 @@ mb.on('after-create-window', () => {
 
 ipc.on('close-window', () => { mb.hideWindow(); });
 ipc.on('toggle-fullscreen', () => {
-  if (mb.window.isFullScreen()) { mb.window.setFullScreen(false); }
-  else { mb.window.setFullScreen(true); }
+  if (mb.window.isFullScreen()) {
+    mb.window.setAspectRatio(16/9, { height: 0, width: 0 });
+    mb.window.setFullScreen(false);
+  } else {
+    mb.window.setAspectRatio(0);
+    mb.window.setFullScreen(true);
+  }
 });
 
 function setPrefs(prefs) {
