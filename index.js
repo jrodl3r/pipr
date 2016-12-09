@@ -60,6 +60,7 @@ $('#prefs .inner').on('click', (e) => { e.stopPropagation(); });
 const alwaysOnTop = app.getPref('alwaysOnTop');
 const showOnAllWorkspaces = app.getPref('showOnAllWorkspaces');
 const winAlwaysOnTop = app.getAlwaysOnTop();
+const rememberWinPos = app.getRememberWinPos();
 
 if (!alwaysOnTop && !showOnAllWorkspaces) {
   $('#autohide-switch').attr('checked', true);
@@ -78,6 +79,11 @@ $('#autohide-switch').on('click', () => {
 if (winAlwaysOnTop) { $('#alwaysontop-switch').attr('checked', true); }
 $('#alwaysontop-switch').on('click', () => {
   app.toggleAlwaysOnTop();
+});
+
+if (rememberWinPos) { $('#rememberpos-switch').attr('checked', true); }
+$('#rememberpos-switch').on('click', () => {
+  app.toggleRememberWinPos();
 });
 
 // warnings

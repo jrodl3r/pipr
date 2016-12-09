@@ -12,12 +12,14 @@ const links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/',
 const buttons = ['/login/like', '/login/watch-later', '/share/facebook', '/share/twitter',
                  '/share/tumblr', 'twitter.com/'];
 
+let prefsPath = '';
+let activePrefs = {};
 let defaultPrefs = {
   alwaysOnTop: true,
   showOnAllWorkspaces: true,
-  window: { alwaysOnTop: true }
+  rememberWinPosition: true,
+  window: { alwaysOnTop: true, pos: { x: 'unset', y: 'unset' }}
 };
-let defaultPos = { x: 0, y: 0 };
 
 let mb = Menubar({
   alwaysOnTop: true,
@@ -26,10 +28,9 @@ let mb = Menubar({
   transparent: true
 });
 
-
 // events
 mb.on('ready', () => {
-  let prefsPath = mb.app.getPath('userData') + '/prefs.json';
+  prefsPath = mb.app.getPath('userData') + '/prefs.json';
 
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
@@ -69,16 +70,23 @@ mb.on('after-create-window', () => {
 
   mb.window.on('focus', () => { wc.send('window-focus'); });
 
+  mb.window.on('moved', () => {
+    let pos = mb.window.getPosition();
+    saveWindowPos({ x: pos[0], y: pos[1] });
+  });
+
   mb.on('hide', () => {
     let pos = mb.window.getPosition();
-    defaultPos.x = pos[0];
-    defaultPos.y = pos[1];
+    saveWindowPos({ x: pos[0], y: pos[1] });
   });
 
   mb.on('show', () => {
-    if (defaultPos.x !== 0 && defaultPos.x !== 0) {
-      mb.setOption('x', defaultPos.x);
-      mb.setOption('y', defaultPos.y);
+    if (activePrefs.rememberWinPosition &&
+        activePrefs.window.pos.x !== 'unset' && activePrefs.window.pos.y !== 'unset') {
+      mb.setOption('x', activePrefs.window.pos.x);
+      mb.setOption('y', activePrefs.window.pos.y);
+    } else {
+      // TODO: setup fixed-win-pos
     }
   });
 
@@ -158,38 +166,54 @@ ipc.on('close-window', () => { mb.hideWindow(); });
 
 // preferences
 function setPrefs(prefs) {
+  activePrefs = prefs;
   mb.setOption('alwaysOnTop', prefs.alwaysOnTop);
   mb.setOption('showOnAllWorkspaces', prefs.showOnAllWorkspaces);
-  if (prefs.window.alwaysOnTop) {
-    mb.window.setAlwaysOnTop(true);
-  } else { mb.window.setAlwaysOnTop(false, 'floating'); }
-  // TODO: default window size + position
+  if (prefs.window.alwaysOnTop) { mb.window.setAlwaysOnTop(true); }
+  else { mb.window.setAlwaysOnTop(false, 'floating'); }
 }
+
+function saveWindowPos(pos) {
+  storage.isPathExists(prefsPath, (itDoes) => {
+    if (itDoes) {
+      storage.get(prefsPath)
+        .then(data => {
+          data.window.pos.x = pos.x;
+          activePrefs.window.pos.x = pos.x;
+          data.window.pos.y = pos.y;
+          activePrefs.window.pos.y = pos.y;
+          storage.set(prefsPath, data)
+            .catch(err => { console.error(err); });
+        })
+        .catch(err => { console.error(err); });
+    }
+  });
+};
 
 // helpers
 exports.getPref = (pref) => { return mb.getOption(pref); }
 exports.getAlwaysOnTop = () => { return mb.window.isAlwaysOnTop(); }
 exports.getFullscreen = () => { return mb.window.isFullScreen(); }
+exports.getRememberWinPos = () => { return activePrefs.rememberWinPosition; }
 
 exports.toggleAutohide = () => {
-  let prefsPath = mb.app.getPath('userData') + '/prefs.json';
-
-  mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
-  mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
-  if (!mb.getOption('alwaysOnTop') && !mb.getOption('showOnAllWorkspaces') && mb.window.isAlwaysOnTop()) {
-    mb.window.setAlwaysOnTop(false, 'floating');
-  }
-
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
         .then(data => {
-          data.alwaysOnTop = mb.getOption('alwaysOnTop');
-          data.showOnAllWorkspaces = mb.getOption('showOnAllWorkspaces');
+          data.alwaysOnTop = !mb.getOption('alwaysOnTop');
+          data.showOnAllWorkspaces = !mb.getOption('showOnAllWorkspaces');
           if (!data.alwaysOnTop && !data.showOnAllWorkspaces && data.window.alwaysOnTop) {
             data.window.alwaysOnTop = false;
           }
           storage.set(prefsPath, data)
+            .then(() => {
+              mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
+              mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
+              if (!mb.getOption('alwaysOnTop') && !mb.getOption('showOnAllWorkspaces') && mb.window.isAlwaysOnTop()) {
+                mb.window.setAlwaysOnTop(false, 'floating');
+              }
+            })
             .catch(err => { console.error(err); });
         })
         .catch(err => { console.error(err); });
@@ -198,17 +222,31 @@ exports.toggleAutohide = () => {
 }
 
 exports.toggleAlwaysOnTop = () => {
-  let prefsPath = mb.app.getPath('userData') + '/prefs.json';
-
-  if (mb.window.isAlwaysOnTop()) { mb.window.setAlwaysOnTop(false, 'floating'); }
-  else { mb.window.setAlwaysOnTop(true); }
-
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
         .then(data => {
-          data.window.alwaysOnTop = mb.window.isAlwaysOnTop();
+          data.window.alwaysOnTop = !mb.window.isAlwaysOnTop();
           storage.set(prefsPath, data)
+            .then(() => {
+              if (mb.window.isAlwaysOnTop()) { mb.window.setAlwaysOnTop(false, 'floating'); }
+              else { mb.window.setAlwaysOnTop(true); }
+            })
+            .catch(err => { console.error(err); });
+        })
+        .catch(err => { console.error(err); });
+    }
+  });
+}
+
+exports.toggleRememberWinPos = () => {
+  storage.isPathExists(prefsPath, (itDoes) => {
+    if (itDoes) {
+      storage.get(prefsPath)
+        .then(data => {
+          data.rememberWinPosition = !data.rememberWinPosition;
+          storage.set(prefsPath, data)
+            .then(() => { activePrefs.rememberWinPosition = !activePrefs.rememberWinPosition; })
             .catch(err => { console.error(err); });
         })
         .catch(err => { console.error(err); });
