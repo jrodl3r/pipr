@@ -246,6 +246,7 @@ body.hasVideo {
   color: #666;
   font-size: 12px;
   font-weight: 500;
+  -webkit-user-select: none;
 }
 
 #prefs label, #prefs input, #prefs .item {
