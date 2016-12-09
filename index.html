@@ -19,6 +19,7 @@
     <div id="video" class="isHidden"></div>
     <div id="prefs">
       <div class="inner">
+        <h2>Preferences</h2>
         <div class="item autohide">
           <label for="autohide-switch">Auto-hide</label>
           <input id="autohide-switch" type="checkbox" />
@@ -27,11 +28,16 @@
           <label for="alwaysontop-switch">Always on top</label>
           <input id="alwaysontop-switch" type="checkbox" />
         </div>
+        <div class="item">
+          <label>Default Position</label>
+        </div>
       </div>
     </div>
   </div>
   <div id="control-bar">
-    <div id="close-button">&#9447;</div>
+    <div class="button" id="close-button"></div>
+    <div class="button right" id="fullscreen-button"></div>
+    <div class="button right" id="prefs-button"></div>
   </div>
   <div id="click-sheild"></div>
   <script>
