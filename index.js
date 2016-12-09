@@ -16,7 +16,6 @@ ipc.on('toggle-prefs', () => {
 });
 
 ipc.on('dropped-text', (e, text) => {
-  $('#prefs').removeClass('isActive');
   if (/youtu/.test(text) || /vimeo/.test(text)) {
     let id = /youtu/.test(text) ? getYouTubeId(text) : getVimeoId(text);
     if (id && !/(\/)/.test(id)) {
@@ -36,6 +35,7 @@ ipc.on('dropped-text', (e, text) => {
     $('#drop-splash span').html('Invalid YouTube / Vimeo URL');
     $('#drop-splash').removeClass('isHidden');
   }
+  $('#prefs').removeClass('isActive');
 });
 
 $('#close-button').on('click', () => {
@@ -56,11 +56,24 @@ const alwaysOnTop = app.getPref('alwaysOnTop');
 const showOnAllWorkspaces = app.getPref('showOnAllWorkspaces');
 const winAlwaysOnTop = app.getAlwaysOnTop();
 
-if (!alwaysOnTop && !showOnAllWorkspaces) { $('#autohide-switch').attr('checked', 'checked'); }
-$('#autohide-switch').on('click', () => { app.toggleAutohide(); });
+if (!alwaysOnTop && !showOnAllWorkspaces) {
+  $('#autohide-switch').attr('checked', true);
+  $('.alwaysontop').addClass('isDisabled');
+}
 
-if (winAlwaysOnTop) { $('#alwaysontop-switch').attr('checked', 'checked'); }
-$('#alwaysontop-switch').on('click', () => { app.toggleAlwaysOnTop(); });
+$('#autohide-switch').on('click', () => {
+  if (!$('#autohide-switch').is(':checked')) { $('.alwaysontop').removeClass('isDisabled'); }
+  else {
+    if ($('#alwaysontop-switch').is(':checked')) { $('#alwaysontop-switch').prop('checked', false); }
+    $('.alwaysontop').addClass('isDisabled');
+  }
+  app.toggleAutohide();
+});
+
+if (winAlwaysOnTop) { $('#alwaysontop-switch').attr('checked', true); }
+$('#alwaysontop-switch').on('click', () => {
+  app.toggleAlwaysOnTop();
+});
 
 // video URL helpers
 function getVideoId(str, prefixes) {

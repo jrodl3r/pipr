@@ -133,6 +133,9 @@ exports.toggleAutohide = () => {
 
   mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
   mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
+  if (!mb.getOption('alwaysOnTop') && !mb.getOption('showOnAllWorkspaces') && mb.window.isAlwaysOnTop()) {
+    mb.window.setAlwaysOnTop(false, 'floating');
+  }
 
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
@@ -140,6 +143,9 @@ exports.toggleAutohide = () => {
         .then(data => {
           data.alwaysOnTop = mb.getOption('alwaysOnTop');
           data.showOnAllWorkspaces = mb.getOption('showOnAllWorkspaces');
+          if (!data.alwaysOnTop && !data.showOnAllWorkspaces && data.window.alwaysOnTop) {
+            data.window.alwaysOnTop = false;
+          }
           storage.set(prefsPath, data)
             .catch(err => { console.error(err); });
         })
