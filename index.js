@@ -4,6 +4,10 @@ const app = require('electron').remote.require('./app');
 let ipc = require('electron').ipcRenderer;
 let $ = require('jquery');
 
+const defaultMsg = 'Drop YouTube or Vimeo Links Here <span class="sub-splash">(or the menubar icon)</span>';
+const invalidID = 'Invalid YouTube / Vimeo Link ID';
+const invalidURL = 'Invalid YouTube / Vimeo URL';
+
 // events
 ipc.on('window-blur', () => { $('body').addClass('isBlurred'); });
 ipc.on('window-focus', () => { $('body').removeClass('isBlurred'); });
@@ -31,14 +35,10 @@ ipc.on('dropped-text', (e, text) => {
       $('#video').removeClass('isHidden');
       $('body').addClass('hasVideo');
     } else {
-      $('#drop-splash span').html('Invalid YouTube / Vimeo Link ID');
-      $('#drop-splash').removeClass('isHidden');
-      $('body').removeClass('hasVideo');
+      showWarning(invalidID);
     }
   } else {
-    $('#drop-splash span').html('Invalid YouTube / Vimeo URL');
-    $('#drop-splash').removeClass('isHidden');
-    $('body').removeClass('hasVideo');
+    showWarning(invalidURL);
   }
   $('#prefs').removeClass('isActive');
 });
@@ -79,6 +79,16 @@ if (winAlwaysOnTop) { $('#alwaysontop-switch').attr('checked', true); }
 $('#alwaysontop-switch').on('click', () => {
   app.toggleAlwaysOnTop();
 });
+
+// warnings
+function showWarning(msg) {
+  $('#drop-splash span').html(msg);
+  $('#drop-splash').removeClass('isHidden');
+  setTimeout(() => {
+    if ($('body').hasClass('hasVideo')) { $('#drop-splash').addClass('isHidden'); }
+    $('#drop-splash span').html(defaultMsg);
+  }, 2000);
+}
 
 // video URL helpers
 function getVideoId(str, prefixes) {
