@@ -61,6 +61,7 @@ mb.on('after-create-window', () => {
     { label: 'Quit', type: 'normal', accelerator: 'Cmd+Q', click () { mb.app.quit(); }}
   ]);
 
+  // require('electron-debug')({ showDevTools: true });
   // mb.window.openDevTools();
   // mb.window.setMaximumSize(960, 540);
   mb.window.setMinimumSize(260, 146);
