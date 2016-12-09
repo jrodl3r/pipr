@@ -26,6 +26,7 @@
     "eslint": "^3.11.1"
   },
   "dependencies": {
+    "electron-localshortcut": "^1.0.0",
     "electron-storage": "^1.0.7",
     "jquery": "^3.1.1",
     "menubar": "^5.1.0"

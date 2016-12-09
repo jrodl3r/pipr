@@ -3,6 +3,7 @@
 const fs = require('fs');
 const storage = require('electron-storage');
 const Menubar = require('menubar');
+const localShortcut = require('electron-localshortcut');
 const { Menu, globalShortcut } = require('electron');
 const ipc = require('electron').ipcMain;
 
@@ -113,15 +114,18 @@ mb.on('after-create-window', () => {
   mb.tray.on('right-click', () => { mb.tray.popUpContextMenu(contextMenu); });
 
   // shortcuts
-  const regEscKey = globalShortcut.register('Esc', () => {
+  localShortcut.register(mb.window, 'Esc', () => {
     if (mb.window.isFullScreen()) {
       mb.window.setAspectRatio(16/9, { height: 0, width: 0 });
       mb.window.setFullScreen(false);
     } else { wc.send('hide-prefs'); }
-  })
-  if (!regEscKey) { console.log('esc-key registration failed'); }
+  });
+  // if (!localShortcut.isRegistered(mb.window, 'Esc')) { console.log('Esc-key Not Registered'); }
 
-  mb.app.on('will-quit', () => { globalShortcut.unregisterAll(); });
+  mb.app.on('will-quit', () => {
+    localShortcut.unregister(mb.window, 'Esc');
+    localShortcut.unregisterAll(mb.window);
+  });
 });
 
 // remotes
