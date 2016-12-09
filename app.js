@@ -31,16 +31,15 @@ let mb = Menubar({
 // events
 mb.on('ready', () => {
   prefsPath = mb.app.getPath('userData') + '/prefs.json';
-
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
-        .then(data => { setPrefs(data); })
-        .catch(err => { console.error(err); });
+      .then(data => { setPrefs(data); })
+      .catch(err => { console.error(err); });
     } else {
       storage.set(prefsPath, defaultPrefs)
-        .then(() => { setPrefs(defaultPrefs); })
-        .catch(err => { console.error(err); });
+      .then(() => { setPrefs(defaultPrefs); })
+      .catch(err => { console.error(err); });
     }
   });
 });
@@ -119,13 +118,11 @@ mb.on('after-create-window', () => {
   // tray
   mb.tray.on('drop-text', (e, text) => {
     let pos = mb.window.getPosition();
-
     if (mb.window.isVisible()) {
       mb.setOption('x', pos[0]);
       mb.setOption('y', pos[1]);
     } else {
       let trayPos = mb.positioner.calculate('trayCenter', mb.tray.getBounds());
-
       mb.setOption('x', trayPos.x);
       mb.setOption('y', 25);
       mb.window.setSize(500, 280);
@@ -177,15 +174,17 @@ function saveWindowPos(pos) {
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
-        .then(data => {
-          data.window.pos.x = pos.x;
+      .then(data => {
+        data.window.pos.x = pos.x;
+        data.window.pos.y = pos.y;
+        storage.set(prefsPath, data)
+        .then(() => {
           activePrefs.window.pos.x = pos.x;
-          data.window.pos.y = pos.y;
           activePrefs.window.pos.y = pos.y;
-          storage.set(prefsPath, data)
-            .catch(err => { console.error(err); });
         })
         .catch(err => { console.error(err); });
+      })
+      .catch(err => { console.error(err); });
     }
   });
 };
@@ -200,23 +199,23 @@ exports.toggleAutohide = () => {
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
-        .then(data => {
-          data.alwaysOnTop = !mb.getOption('alwaysOnTop');
-          data.showOnAllWorkspaces = !mb.getOption('showOnAllWorkspaces');
-          if (!data.alwaysOnTop && !data.showOnAllWorkspaces && data.window.alwaysOnTop) {
-            data.window.alwaysOnTop = false;
+      .then(data => {
+        data.alwaysOnTop = !mb.getOption('alwaysOnTop');
+        data.showOnAllWorkspaces = !mb.getOption('showOnAllWorkspaces');
+        if (!data.alwaysOnTop && !data.showOnAllWorkspaces && data.window.alwaysOnTop) {
+          data.window.alwaysOnTop = false;
+        }
+        storage.set(prefsPath, data)
+        .then(() => {
+          mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
+          mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
+          if (!mb.getOption('alwaysOnTop') && !mb.getOption('showOnAllWorkspaces') && mb.window.isAlwaysOnTop()) {
+            mb.window.setAlwaysOnTop(false, 'floating');
           }
-          storage.set(prefsPath, data)
-            .then(() => {
-              mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
-              mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
-              if (!mb.getOption('alwaysOnTop') && !mb.getOption('showOnAllWorkspaces') && mb.window.isAlwaysOnTop()) {
-                mb.window.setAlwaysOnTop(false, 'floating');
-              }
-            })
-            .catch(err => { console.error(err); });
         })
         .catch(err => { console.error(err); });
+      })
+      .catch(err => { console.error(err); });
     }
   });
 }
@@ -225,16 +224,16 @@ exports.toggleAlwaysOnTop = () => {
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
-        .then(data => {
-          data.window.alwaysOnTop = !mb.window.isAlwaysOnTop();
-          storage.set(prefsPath, data)
-            .then(() => {
-              if (mb.window.isAlwaysOnTop()) { mb.window.setAlwaysOnTop(false, 'floating'); }
-              else { mb.window.setAlwaysOnTop(true); }
-            })
-            .catch(err => { console.error(err); });
+      .then(data => {
+        data.window.alwaysOnTop = !mb.window.isAlwaysOnTop();
+        storage.set(prefsPath, data)
+        .then(() => {
+          if (mb.window.isAlwaysOnTop()) { mb.window.setAlwaysOnTop(false, 'floating'); }
+          else { mb.window.setAlwaysOnTop(true); }
         })
         .catch(err => { console.error(err); });
+      })
+      .catch(err => { console.error(err); });
     }
   });
 }
@@ -243,13 +242,13 @@ exports.toggleRememberWinPos = () => {
   storage.isPathExists(prefsPath, (itDoes) => {
     if (itDoes) {
       storage.get(prefsPath)
-        .then(data => {
-          data.rememberWinPosition = !data.rememberWinPosition;
-          storage.set(prefsPath, data)
-            .then(() => { activePrefs.rememberWinPosition = !activePrefs.rememberWinPosition; })
-            .catch(err => { console.error(err); });
-        })
+      .then(data => {
+        data.rememberWinPosition = !data.rememberWinPosition;
+        storage.set(prefsPath, data)
+        .then(() => { activePrefs.rememberWinPosition = !activePrefs.rememberWinPosition; })
         .catch(err => { console.error(err); });
+      })
+      .catch(err => { console.error(err); });
     }
   });
 }
