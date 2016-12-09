@@ -113,6 +113,10 @@ mb.on('after-create-window', () => {
 });
 
 ipc.on('close-window', () => { mb.hideWindow(); });
+ipc.on('toggle-fullscreen', () => {
+  if (mb.window.isFullScreen()) { mb.window.setFullScreen(false); }
+  else { mb.window.setFullScreen(true); }
+});
 
 function setPrefs(prefs) {
   mb.setOption('alwaysOnTop', prefs.alwaysOnTop);
@@ -127,6 +131,7 @@ function setPrefs(prefs) {
 // helpers
 exports.getPref = (pref) => { return mb.getOption(pref); }
 exports.getAlwaysOnTop = () => { return mb.window.isAlwaysOnTop(); }
+exports.getFullscreen = () => { return mb.window.isFullScreen(); }
 
 exports.toggleAutohide = () => {
   let prefsPath = mb.app.getPath('userData') + '/prefs.json';

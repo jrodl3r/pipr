@@ -43,15 +43,12 @@ ipc.on('dropped-text', (e, text) => {
 
 $('#close-button').on('click', () => {
   $('#prefs').removeClass('isActive');
-  $('#video').addClass('isHidden');
-  if ($('#video iframe').length) { $('#video iframe').remove(); }
-  $('#drop-splash').removeClass('isHidden');
-  $('#drop-splash span').html('Drop YouTube or Vimeo Links Here<span class="sub-splash">(or the menubar icon)</span>');
+  if (app.getFullscreen()) { ipc.send('toggle-fullscreen'); }
   ipc.send('close-window');
 });
 
 $('#prefs-button').on('click', () => { $('#prefs').toggleClass('isActive'); });
-$('#fullscreen-button').on('click', () => { /* TODO */ });
+$('#fullscreen-button').on('click', () => { ipc.send('toggle-fullscreen'); });
 
 $('#click-sheild').on('click', (e) => { e.preventDefault(); });
 $('#prefs').on('click', () => { $('#prefs').removeClass('isActive'); });
