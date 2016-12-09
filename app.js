@@ -120,7 +120,7 @@ mb.on('after-create-window', () => {
       mb.window.setFullScreen(false);
     } else { wc.send('hide-prefs'); }
   });
-  // if (!localShortcut.isRegistered(mb.window, 'Esc')) { console.log('Esc-key Not Registered'); }
+  localShortcut.register(mb.window, 'Cmd+,', () => { wc.send('toggle-prefs'); });
 
   mb.app.on('will-quit', () => {
     localShortcut.unregister(mb.window, 'Esc');

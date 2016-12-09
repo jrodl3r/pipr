@@ -11,15 +11,11 @@ ipc.on('start-loading', () => { $('body').addClass('isLoading'); });
 ipc.on('stop-loading', () => { $('body').removeClass('isLoading'); });
 
 ipc.on('toggle-prefs', () => {
-  if (!$('#prefs').hasClass('isActive')) { $('#prefs').addClass('isActive'); }
-  else { $('#prefs').removeClass('isActive'); }
+  if ($('#prefs').hasClass('isActive')) { $('#prefs').removeClass('isActive'); }
+  else { $('#prefs').addClass('isActive'); }
 });
 
-ipc.on('hide-prefs', () => {
-  if ($('#prefs').hasClass('isActive') && !$('body').hasClass('isBlurred')) {
-    $('#prefs').removeClass('isActive');
-  }
-});
+ipc.on('hide-prefs', () => { $('#prefs').removeClass('isActive'); });
 
 ipc.on('dropped-text', (e, text) => {
   if (/youtu/.test(text) || /vimeo/.test(text)) {
