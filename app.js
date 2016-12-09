@@ -51,12 +51,12 @@ mb.on('create-window', () => {
 mb.on('after-create-window', () => {
   let wc = mb.window.webContents;
   let contextMenu = Menu.buildFromTemplate([
-    { label: 'Preferences', type: 'normal',
+    { label: 'Preferences', type: 'normal', accelerator: 'Cmd+,',
       click () {
         if (!mb.window.isVisible()) { mb.showWindow(); }
         wc.send('toggle-prefs');
       }},
-    { label: 'Quit', type: 'normal', click () { mb.app.quit(); }}
+    { label: 'Quit', type: 'normal', accelerator: 'Cmd+Q', click () { mb.app.quit(); }}
   ]);
 
   // mb.window.openDevTools();
