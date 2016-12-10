@@ -48,7 +48,7 @@ body {
   z-index: 2;
   height: 100%;
   width: 100%;
-  color: #888;
+  color: #AAA;
   font-size: 15px;
   font-weight: 300;
   text-align: center;
@@ -64,7 +64,7 @@ body {
 #drop-splash .sub-splash {
   display: block;
   padding: 10px 5px 0;
-  color: #696969;
+  color: #757575;
   font-size: 12px;
   font-weight: 200;
   text-align: center;
@@ -221,7 +221,7 @@ body {
   transition: 0s;
 }
 
-#prefs.isActive {
+.prefsActive #prefs {
   height: 100%;
   width: 100%;
   opacity: 1;
@@ -279,21 +279,15 @@ body {
 }
 
 #prefs .item input {
-  display: none;
+  display: block;
   position: absolute;
   top: 4px;
   right: 6px;
-}
-
-#prefs.isActive .item input {
-  display: block;
-}
-
-#prefs .item.isDisabled input,
-#prefs.isActive .item.isDisabled input {
-  display: block;
   -webkit-user-select: none;
-  pointer-events: none;
+}
+
+.prefsActive #prefs .item input {
+  -webkit-user-select: auto;
 }
 
 .isHidden { display: none !important; }

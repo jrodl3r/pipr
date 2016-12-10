@@ -15,11 +15,11 @@ ipc.on('start-loading', () => { $('body').addClass('isLoading'); });
 ipc.on('stop-loading', () => { $('body').removeClass('isLoading'); });
 
 ipc.on('toggle-prefs', () => {
-  if ($('#prefs').hasClass('isActive')) { $('#prefs').removeClass('isActive'); }
-  else { $('#prefs').addClass('isActive'); }
+  if ($('body').hasClass('prefsActive')) { $('body').removeClass('prefsActive'); }
+  else { $('body').addClass('prefsActive'); }
 });
 
-ipc.on('hide-prefs', () => { $('#prefs').removeClass('isActive'); });
+ipc.on('hide-prefs', () => { $('body').removeClass('prefsActive'); });
 
 ipc.on('dropped-text', (e, text) => {
   if (/youtu/.test(text) || /vimeo/.test(text)) {
@@ -40,7 +40,7 @@ ipc.on('dropped-text', (e, text) => {
   } else {
     showWarning(invalidURL);
   }
-  $('#prefs').removeClass('isActive');
+  $('body').removeClass('prefsActive');
 });
 
 $('#control-bar').on('dblclick', (e) => {
@@ -48,12 +48,12 @@ $('#control-bar').on('dblclick', (e) => {
 });
 
 $('#close-button').on('click', (e) => {
-  $('#prefs').removeClass('isActive');
+  $('body').removeClass('prefsActive');
   if (app.getFullscreen()) { ipc.send('toggle-fullscreen'); }
   ipc.send('close-window');
 });
 
-$('#prefs-button').on('click', (e) => { $('#prefs').toggleClass('isActive'); });
+$('#prefs-button').on('click', (e) => { $('body').toggleClass('prefsActive'); });
 $('#prefs-button').on('dblclick', (e) => { stopClick(e); });
 
 $('#fullscreen-button').on('click', (e) => {
@@ -62,7 +62,7 @@ $('#fullscreen-button').on('click', (e) => {
 });
 
 $('#click-sheild').on('click', (e) => { stopClick(e); });
-$('#prefs').on('click', () => { $('#prefs').removeClass('isActive'); });
+$('#prefs').on('click', () => { $('body').removeClass('prefsActive'); });
 $('#prefs .inner').on('click', (e) => { e.stopPropagation(); });
 
 // prefs
@@ -95,7 +95,7 @@ $('#rememberpos-switch').on('click', () => {
   app.toggleRememberWinPos();
 });
 
-// warnings
+// helpers
 function showWarning(msg) {
   $('#drop-splash span').html(msg);
   $('#drop-splash').removeClass('isHidden');
@@ -103,6 +103,11 @@ function showWarning(msg) {
     if ($('body').hasClass('hasVideo')) { $('#drop-splash').addClass('isHidden'); }
     $('#drop-splash span').html(defaultMsg);
   }, 2000);
+}
+
+function stopClick(e) {
+  e.preventDefault();
+  e.stopPropagation();
 }
 
 // video URL helpers
@@ -132,9 +137,4 @@ function getVimeoId(url) {
     'player.vimeo.com/video/',
     'player.vimeo.com/'
   ]);
-}
-
-function stopClick(e) {
-  e.preventDefault();
-  e.stopPropagation();
 }
