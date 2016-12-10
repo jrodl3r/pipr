@@ -43,12 +43,12 @@ ipc.on('dropped-text', (e, text) => {
   $('#prefs').removeClass('isActive');
 });
 
+$('#control-bar').on('dblclick', () => { if ($('body').hasClass('hasVideo')) { ipc.send('toggle-fullscreen'); }});
 $('#close-button').on('click', () => {
   $('#prefs').removeClass('isActive');
   if (app.getFullscreen()) { ipc.send('toggle-fullscreen'); }
   ipc.send('close-window');
 });
-
 $('#prefs-button').on('click', () => { $('#prefs').toggleClass('isActive'); });
 $('#fullscreen-button').on('click', () => { ipc.send('toggle-fullscreen'); });
 
