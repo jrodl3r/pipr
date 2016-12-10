@@ -44,28 +44,24 @@ ipc.on('dropped-text', (e, text) => {
 });
 
 $('#control-bar').on('dblclick', (e) => {
-  e.stopPropagation();
   if ($('body').hasClass('hasVideo')) { ipc.send('toggle-fullscreen'); }
 });
 
 $('#close-button').on('click', (e) => {
-  e.stopPropagation();
   $('#prefs').removeClass('isActive');
   if (app.getFullscreen()) { ipc.send('toggle-fullscreen'); }
   ipc.send('close-window');
 });
 
-$('#prefs-button').on('click', (e) => {
-  e.stopPropagation();
-  $('#prefs').toggleClass('isActive');
-});
+$('#prefs-button').on('click', (e) => { $('#prefs').toggleClass('isActive'); });
+$('#prefs-button').on('dblclick', (e) => { stopClick(e); });
 
 $('#fullscreen-button').on('click', (e) => {
-  e.stopPropagation();
+  stopClick(e);
   ipc.send('toggle-fullscreen');
 });
 
-$('#click-sheild').on('click', (e) => { e.stopPropagation(); });
+$('#click-sheild').on('click', (e) => { stopClick(e); });
 $('#prefs').on('click', () => { $('#prefs').removeClass('isActive'); });
 $('#prefs .inner').on('click', (e) => { e.stopPropagation(); });
 
@@ -136,4 +132,9 @@ function getVimeoId(url) {
     'player.vimeo.com/video/',
     'player.vimeo.com/'
   ]);
+}
+
+function stopClick(e) {
+  e.preventDefault();
+  e.stopPropagation();
 }
