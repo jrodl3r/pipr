@@ -1,6 +1,7 @@
 # pipr 📹
 stealthy menubar video player for YouTube & Vimeo
 
+![](design/screen.png)
 
 ## Dev
 
