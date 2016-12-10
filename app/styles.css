@@ -139,7 +139,9 @@ body {
 }
 
 #control-bar .button {
-  float: left;
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 22px;
   padding: 0 5px;
   line-height: 26px;
@@ -163,8 +165,14 @@ body {
   opacity: .5;
 }
 
-#control-bar .right {
-  float: right;
+#control-bar .prefs {
+  left: initial;
+  right: 24px;
+}
+
+#control-bar .fullscreen {
+  left: initial;
+  right: 0;
 }
 
 #fullscreen-button, #fullscreen-button:hover {
