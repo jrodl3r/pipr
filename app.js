@@ -4,7 +4,7 @@ const fs = require('fs');
 const storage = require('electron-storage');
 const Menubar = require('menubar');
 const localShortcut = require('electron-localshortcut');
-const { Menu, globalShortcut } = require('electron');
+const { Menu } = require('electron');
 const ipc = require('electron').ipcMain;
 
 const links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/',
@@ -61,8 +61,8 @@ mb.on('after-create-window', () => {
     { label: 'Quit', type: 'normal', accelerator: 'Cmd+Q', click () { mb.app.quit(); }}
   ]);
 
-  // require('electron-debug')({ showDevTools: true });
-  // mb.window.openDevTools();
+  require('electron-debug')({ showDevTools: true });
+  mb.window.openDevTools();
   // mb.window.setMaximumSize(960, 540);
   mb.window.setMinimumSize(260, 146);
   mb.window.setAspectRatio(16/9, { height: 0, width: 0 });

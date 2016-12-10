@@ -22,23 +22,29 @@
         <h2>Preferences</h2>
         <div class="item autohide">
           <label for="autohide-switch">Auto-hide</label>
-          <input id="autohide-switch" type="checkbox" />
+          <input id="autohide-switch" type="checkbox" tabIndex="-1" />
         </div>
         <div class="item alwaysontop">
           <label for="alwaysontop-switch">Always on top</label>
-          <input id="alwaysontop-switch" type="checkbox" />
+          <input id="alwaysontop-switch" type="checkbox" tabIndex="-1" />
         </div>
-        <div class="item">
-          <label>Remember Position</label>
-          <input id="rememberpos-switch" type="checkbox" />
+        <div class="item rememberpos">
+          <label for="rememberpos-switch">Remember Position</label>
+          <input id="rememberpos-switch" type="checkbox" tabIndex="-1" />
         </div>
       </div>
     </div>
   </div>
   <div id="control-bar">
-    <div class="button" id="close-button"></div>
-    <div class="button right" id="fullscreen-button"></div>
-    <div class="button right" id="prefs-button"></div>
+    <div class="button" id="close-button">
+      <img src="img/close.svg" alt="Close">
+    </div>
+    <div class="button right" id="fullscreen-button">
+      <img src="img/fullscreen.svg" alt="Fullscreen">
+    </div>
+    <div class="button right" id="prefs-button">
+      <img class="gear" src="img/gear.svg" alt="Prefs">
+    </div>
   </div>
   <div id="click-sheild"></div>
   <script>

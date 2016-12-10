@@ -50,7 +50,7 @@ body.hasVideo {
   z-index: 2;
   height: 100%;
   width: 100%;
-  color: rgba(255,255,255, .4);
+  color: #777;
   font-size: 15px;
   font-weight: 300;
   text-align: center;
@@ -66,7 +66,7 @@ body.hasVideo {
 #drop-splash .sub-splash {
   display: block;
   padding: 10px 5px 0;
-  color: rgba(255,255,255, .25);
+  color: #555;
   font-size: 12px;
   font-weight: 200;
   text-align: center;
@@ -142,11 +142,22 @@ body.hasVideo {
 #control-bar .button {
   float: left;
   height: 22px;
-  width: 22px;
-  background-size: 12px 12px;
+  padding: 0 5px;
+  line-height: 26px;
+  text-align: center;
   -webkit-user-select: none;
   transition: opacity .3s;
   opacity: .3;
+}
+
+#control-bar .button img {
+  height: 14px;
+  width: 14px;
+}
+
+#control-bar .button img.gear {
+  height: 15px;
+  width: 15px;
 }
 
 #control-bar .button:hover {
@@ -157,26 +168,13 @@ body.hasVideo {
   float: right;
 }
 
-#close-button {
-  padding-left: 3px;
-  background: url(img/close.svg) center center no-repeat;
-}
-
-#prefs-button {
-  background: url(img/gear.svg) center center no-repeat;
-  background-size: 14px 14px !important;
-}
-
 #fullscreen-button, #fullscreen-button:hover {
-  padding-right: 3px;
-  background: url(img/fullscreen.svg) center center no-repeat;
-  background-size: 12px 12px;
   opacity: .15 !important;
   pointer-events: none;
 }
 
 .hasVideo #fullscreen-button {
-  opacity: .3;
+  opacity: .3 !important;
   pointer-events: auto;
 }
 
@@ -243,7 +241,7 @@ body.hasVideo {
 #prefs h2 {
   margin: 0;
   padding: 0 0 10px;
-  color: #666;
+  color: #888;
   font-size: 12px;
   font-weight: 500;
   -webkit-user-select: none;
@@ -259,7 +257,7 @@ body.hasVideo {
   min-width: 130px;
   margin: 0 0 5px;
   padding: 3px 6px;
-  color: #AAA;
+  color: #CCC;
   font-size: 12px;
   text-align: left;
   text-shadow: 0 0 1px #000;
@@ -274,12 +272,20 @@ body.hasVideo {
 }
 
 #prefs .item input {
+  display: none;
   position: absolute;
   top: 4px;
   right: 6px;
 }
 
-#prefs .item.isDisabled input {
+#prefs.isActive .item input {
+  display: block;
+}
+
+#prefs .item.isDisabled input,
+#prefs.isActive .item.isDisabled input {
+  display: block;
+  -webkit-user-select: none;
   pointer-events: none;
 }
 
