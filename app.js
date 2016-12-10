@@ -22,6 +22,7 @@ let defaultPrefs = {
 };
 
 let mb = Menubar({
+  dir: __dirname + '/app',
   alwaysOnTop: true,
   showOnAllWorkspaces: true,
   preloadWindow: true,
@@ -67,7 +68,6 @@ mb.on('after-create-window', () => {
   mb.window.setMinimumSize(260, 146);
   mb.window.setAspectRatio(16/9, { height: 0, width: 0 });
   mb.window.setVibrancy('ultra-dark');
-  mb.window.loadURL(`file://${__dirname}/index.html`);
 
   mb.window.on('focus', () => { wc.send('window-focus'); });
 
