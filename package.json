@@ -1,7 +1,7 @@
 {
   "name": "pipr",
   "version": "1.0.0",
-  "description": "mac desktop PiP (picture-in-picture) for YouTube + Vimeo",
+  "description": "stealthy menubar video player for YouTube & Vimeo",
   "author": "John Rodler",
   "license": "MIT",
   "homepage": "https://github.com/jrodl3r/pipr#readme",
