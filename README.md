@@ -16,7 +16,3 @@ $ npm start
 ```bash
 $ npm run build
 ```
-
-## License
-
-MIT License
