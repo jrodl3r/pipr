@@ -115,8 +115,9 @@ body {
 }
 
 .hasVideo #control-bar {
+  background: rgba(0,0,0, 0);
   opacity: .25;
-  transition: 1s 2s;
+  transition: .5s 2s;
 }
 
 #control-bar:hover {

@@ -43,16 +43,29 @@ ipc.on('dropped-text', (e, text) => {
   $('#prefs').removeClass('isActive');
 });
 
-$('#control-bar').on('dblclick', () => { if ($('body').hasClass('hasVideo')) { ipc.send('toggle-fullscreen'); }});
-$('#close-button').on('click', () => {
+$('#control-bar').on('dblclick', (e) => {
+  e.stopPropagation();
+  if ($('body').hasClass('hasVideo')) { ipc.send('toggle-fullscreen'); }
+});
+
+$('#close-button').on('click', (e) => {
+  e.stopPropagation();
   $('#prefs').removeClass('isActive');
   if (app.getFullscreen()) { ipc.send('toggle-fullscreen'); }
   ipc.send('close-window');
 });
-$('#prefs-button').on('click', () => { $('#prefs').toggleClass('isActive'); });
-$('#fullscreen-button').on('click', () => { ipc.send('toggle-fullscreen'); });
 
-$('#click-sheild').on('click', (e) => { e.preventDefault(); });
+$('#prefs-button').on('click', (e) => {
+  e.stopPropagation();
+  $('#prefs').toggleClass('isActive');
+});
+
+$('#fullscreen-button').on('click', (e) => {
+  e.stopPropagation();
+  ipc.send('toggle-fullscreen');
+});
+
+$('#click-sheild').on('click', (e) => { e.stopPropagation(); });
 $('#prefs').on('click', () => { $('#prefs').removeClass('isActive'); });
 $('#prefs .inner').on('click', (e) => { e.stopPropagation(); });
 
