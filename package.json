@@ -22,10 +22,10 @@
   "devDependencies": {
     "babel-eslint": "^7.1.1",
     "devtron": "^1.4.0",
-    "electron": "^1.4.10",
+    "electron": "^1.4.11",
     "electron-debug": "^1.1.0",
-    "electron-packager": "^8.3.0",
-    "eslint": "^3.11.1"
+    "electron-packager": "^8.4.0",
+    "eslint": "^3.12.0"
   },
   "dependencies": {
     "electron-localshortcut": "^1.0.0",
