@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const app = require('electron').remote.require('./app');
 let ipc = require('electron').ipcRenderer;
@@ -7,6 +7,7 @@ let $ = require('jquery');
 const defaultMsg = 'Drop YouTube or Vimeo Links Here <span class="sub-splash">(or the menubar icon)</span>';
 const invalidID = 'Invalid YouTube / Vimeo Link ID';
 const invalidURL = 'Invalid YouTube / Vimeo URL';
+
 
 // events
 ipc.on('window-blur', () => { $('body').addClass('isBlurred'); });
@@ -65,17 +66,16 @@ $('#click-sheild').on('click', (e) => { stopClick(e); });
 $('#prefs').on('click', () => { $('body').removeClass('prefsActive'); });
 $('#prefs .inner').on('click', (e) => { e.stopPropagation(); });
 
-// prefs
-const alwaysOnTop = app.getPref('alwaysOnTop');
-const showOnAllWorkspaces = app.getPref('showOnAllWorkspaces');
-const winAlwaysOnTop = app.getAlwaysOnTop();
-const rememberWinPos = app.getRememberWinPos();
 
-if (!alwaysOnTop && !showOnAllWorkspaces) {
+// prefs
+const rememberWinPos = app.getPref('rememberWinPos');
+const alwaysOnTop = app.getPref('alwaysOnTop');
+const autohide = app.getPref('autohide');
+
+if (autohide) {
   $('#autohide-switch').attr('checked', true);
   $('.alwaysontop').addClass('isDisabled');
 }
-
 $('#autohide-switch').on('click', () => {
   if (!$('#autohide-switch').is(':checked')) { $('.alwaysontop').removeClass('isDisabled'); }
   else {
@@ -85,7 +85,7 @@ $('#autohide-switch').on('click', () => {
   app.toggleAutohide();
 });
 
-if (winAlwaysOnTop) { $('#alwaysontop-switch').attr('checked', true); }
+if (alwaysOnTop) { $('#alwaysontop-switch').attr('checked', true); }
 $('#alwaysontop-switch').on('click', () => {
   app.toggleAlwaysOnTop();
 });
@@ -94,6 +94,7 @@ if (rememberWinPos) { $('#rememberpos-switch').attr('checked', true); }
 $('#rememberpos-switch').on('click', () => {
   app.toggleRememberWinPos();
 });
+
 
 // helpers
 function showWarning(msg) {

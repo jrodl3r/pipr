@@ -1,26 +1,14 @@
-"use strict";
+'use strict';
 
 const fs = require('fs');
-const storage = require('electron-storage');
 const Menubar = require('menubar');
 const localShortcut = require('electron-localshortcut');
-const { Menu } = require('electron');
 const ipc = require('electron').ipcMain;
-
-const links = ['youtube.com/watch?v=', 'youtu.be/', 'youtube.com/embed/',
-               'vimeo.com/', 'player.vimeo.com/video/', 'player.vimeo.com/'];
-const buttons = ['/login/like', '/login/watch-later', '/share/facebook', '/share/twitter',
-                 '/share/tumblr', 'twitter.com/'];
-
-let prefsPath = '';
-let activePrefs = {};
-let defaultPrefs = {
-  alwaysOnTop: true,
-  showOnAllWorkspaces: true,
-  rememberWinPosition: true,
-  window: { alwaysOnTop: true, pos: { x: 'unset', y: 'unset' }}
-};
-
+const { Menu } = require('electron');
+const { LocalStorage } = require('node-localstorage');
+const { links, buttons } = require('./utils');
+let prefs = {};
+let ls;
 let mb = Menubar({
   dir: __dirname + '/app',
   alwaysOnTop: true,
@@ -29,20 +17,10 @@ let mb = Menubar({
   transparent: true
 });
 
-// events
 mb.on('ready', () => {
-  prefsPath = mb.app.getPath('userData') + '/prefs.json';
-  storage.isPathExists(prefsPath, (itDoes) => {
-    if (itDoes) {
-      storage.get(prefsPath)
-      .then(data => { setPrefs(data); })
-      .catch(err => { console.error(err); });
-    } else {
-      storage.set(prefsPath, defaultPrefs)
-      .then(() => { setPrefs(defaultPrefs); })
-      .catch(err => { console.error(err); });
-    }
-  });
+  let prefsPath = mb.app.getPath('userData') + '/prefs';
+  ls = new LocalStorage(prefsPath);
+  loadPrefs();
 });
 
 mb.on('create-window', () => {
@@ -53,14 +31,14 @@ mb.on('create-window', () => {
 
 mb.on('after-create-window', () => {
   let wc = mb.window.webContents;
-  let contextMenu = Menu.buildFromTemplate([
+  let trayMenu = [
     { label: 'Preferences', type: 'normal', accelerator: 'Cmd+,',
       click () {
         if (!mb.window.isVisible()) { mb.showWindow(); }
         wc.send('toggle-prefs');
       }},
-    { label: 'Quit', type: 'normal', accelerator: 'Cmd+Q', click () { mb.app.quit(); }}
-  ]);
+    { label: 'Quit', type: 'normal', accelerator: 'Cmd+Q', click () { mb.app.quit(); }}];
+  let menu = Menu.buildFromTemplate(trayMenu);
 
   // require('electron-debug')({ showDevTools: true });
   // mb.window.openDevTools();
@@ -69,30 +47,25 @@ mb.on('after-create-window', () => {
   mb.window.setAspectRatio(16/9, { height: 0, width: 0 });
   mb.window.setVibrancy('ultra-dark');
 
-  mb.window.on('focus', () => { wc.send('window-focus'); });
-
-  mb.window.on('moved', () => {
-    let pos = mb.window.getPosition();
-    saveWindowPos({ x: pos[0], y: pos[1] });
-  });
-
-  mb.on('hide', () => {
-    let pos = mb.window.getPosition();
-    saveWindowPos({ x: pos[0], y: pos[1] });
-  });
-
   mb.on('show', () => {
-    if (activePrefs.rememberWinPosition &&
-        activePrefs.window.pos.x !== 'unset' && activePrefs.window.pos.y !== 'unset') {
-      mb.setOption('x', activePrefs.window.pos.x);
-      mb.setOption('y', activePrefs.window.pos.y);
+    let x = parseInt(ls.getItem('x'));
+    let y = parseInt(ls.getItem('y'));
+    if (prefs.rememberWinPos && !isNaN(x) && !isNaN(y)) {
+      mb.setOption('x', x);
+      mb.setOption('y', y);
     } else {
       // TODO: setup fixed-win-pos
     }
   });
 
-  mb.on('focus-lost', () => { wc.send('window-blur'); });
+  mb.window.on('moved', () => {
+    let pos = mb.window.getPosition();
+    ls.setItem('x', pos[0]);
+    ls.setItem('y', pos[1]);
+  });
 
+  mb.window.on('focus', () => { wc.send('window-focus'); });
+  mb.on('focus-lost', () => { wc.send('window-blur'); });
   wc.on('did-start-loading', () => { wc.send('start-loading'); });
   wc.on('did-stop-loading', () => { wc.send('stop-loading'); });
 
@@ -103,37 +76,16 @@ mb.on('after-create-window', () => {
 
   wc.on('new-window', (e, text) => {
     e.preventDefault();
-    for (let x = 0; x < links.length; x++) {
-      if (text.indexOf(links[x]) > -1) {
-        for (let y = 0; y < buttons.length; y++) {
-          if (text.indexOf(buttons[y]) !== -1) {
-            break;
-          } else if (y === (buttons.length - 1)) {
-            wc.send('dropped-text', text);
-          }
-        }
-        break;
-      }
-    }
+    if (checkLinkText(text)) { wc.send('dropped-text', text); }
   });
 
   // tray
   mb.tray.on('drop-text', (e, text) => {
-    let pos = mb.window.getPosition();
-    if (mb.window.isVisible()) {
-      mb.setOption('x', pos[0]);
-      mb.setOption('y', pos[1]);
-    } else {
-      let trayPos = mb.positioner.calculate('trayCenter', mb.tray.getBounds());
-      mb.setOption('x', trayPos.x);
-      mb.setOption('y', 25);
-      mb.window.setSize(500, 280);
-      mb.showWindow();
-    }
+    if (!mb.window.isVisible()) { mb.showWindow(); }
     wc.send('dropped-text', text);
   });
 
-  mb.tray.on('right-click', () => { mb.tray.popUpContextMenu(contextMenu); });
+  mb.tray.on('right-click', () => { mb.tray.popUpContextMenu(menu); });
 
   // shortcuts
   localShortcut.register(mb.window, 'Esc', () => {
@@ -142,13 +94,10 @@ mb.on('after-create-window', () => {
       mb.window.setFullScreen(false);
     } else { wc.send('hide-prefs'); }
   });
-  localShortcut.register(mb.window, 'Cmd+,', () => { wc.send('toggle-prefs'); });
 
-  mb.app.on('will-quit', () => {
-    localShortcut.unregister(mb.window, 'Esc');
-    localShortcut.unregisterAll(mb.window);
-  });
+  localShortcut.register(mb.window, 'Cmd+,', () => { wc.send('toggle-prefs'); });
 });
+
 
 // remotes
 ipc.on('toggle-fullscreen', () => {
@@ -163,94 +112,62 @@ ipc.on('toggle-fullscreen', () => {
 
 ipc.on('close-window', () => { mb.hideWindow(); });
 
-// preferences
-function setPrefs(prefs) {
-  activePrefs = prefs;
-  mb.setOption('alwaysOnTop', prefs.alwaysOnTop);
-  mb.setOption('showOnAllWorkspaces', prefs.showOnAllWorkspaces);
-  if (prefs.window.alwaysOnTop) { mb.window.setAlwaysOnTop(true); }
-  else { mb.window.setAlwaysOnTop(false, 'floating'); }
-}
-
-function saveWindowPos(pos) {
-  storage.isPathExists(prefsPath, (itDoes) => {
-    if (itDoes) {
-      storage.get(prefsPath)
-      .then(data => {
-        data.window.pos.x = pos.x;
-        data.window.pos.y = pos.y;
-        storage.set(prefsPath, data)
-        .then(() => {
-          activePrefs.window.pos.x = pos.x;
-          activePrefs.window.pos.y = pos.y;
-        })
-        .catch(err => { console.error(err); });
-      })
-      .catch(err => { console.error(err); });
-    }
-  });
-};
 
 // helpers
-exports.getPref = (pref) => { return mb.getOption(pref); }
-exports.getAlwaysOnTop = () => { return mb.window.isAlwaysOnTop(); }
+function checkLinkText(text) {
+  for (let x = 0; x < links.length; x++) {
+    if (text.indexOf(links[x]) > -1) {
+      for (let y = 0; y < buttons.length; y++) {
+        if (text.indexOf(buttons[y]) !== -1) {
+          return false;
+        } else if (y === (buttons.length - 1)) {
+          return true;
+      } }
+      return false;
+  } }
+}
+
+function loadPrefs() {
+  prefs.rememberWinPos = typeof(ls.getItem('rememberWinPos')) === 'string'
+    ? JSON.parse(ls.getItem('rememberWinPos')) : true;
+  prefs.alwaysOnTop = typeof(ls.getItem('alwaysOnTop')) === 'string'
+    ? JSON.parse(ls.getItem('alwaysOnTop')) : true;
+  prefs.autohide = typeof(ls.getItem('autohide')) === 'string'
+    ? JSON.parse(ls.getItem('autohide')) : false;
+
+  if (prefs.autohide) {
+    mb.setOption('alwaysOnTop', false);
+    mb.setOption('showOnAllWorkspaces', false);
+  }
+  mb.window.setAlwaysOnTop(prefs.alwaysOnTop, 'floating');
+}
+
+exports.getPref = (pref) => { return prefs[pref]; }
 exports.getFullscreen = () => { return mb.window.isFullScreen(); }
-exports.getRememberWinPos = () => { return activePrefs.rememberWinPosition; }
 
 exports.toggleAutohide = () => {
-  storage.isPathExists(prefsPath, (itDoes) => {
-    if (itDoes) {
-      storage.get(prefsPath)
-      .then(data => {
-        data.alwaysOnTop = !mb.getOption('alwaysOnTop');
-        data.showOnAllWorkspaces = !mb.getOption('showOnAllWorkspaces');
-        if (!data.alwaysOnTop && !data.showOnAllWorkspaces && data.window.alwaysOnTop) {
-          data.window.alwaysOnTop = false;
-        }
-        storage.set(prefsPath, data)
-        .then(() => {
-          mb.setOption('alwaysOnTop', !mb.getOption('alwaysOnTop'));
-          mb.setOption('showOnAllWorkspaces', !mb.getOption('showOnAllWorkspaces'));
-          if (!mb.getOption('alwaysOnTop') && !mb.getOption('showOnAllWorkspaces') && mb.window.isAlwaysOnTop()) {
-            mb.window.setAlwaysOnTop(false, 'floating');
-          }
-        })
-        .catch(err => { console.error(err); });
-      })
-      .catch(err => { console.error(err); });
-    }
-  });
+  prefs.autohide = !prefs.autohide;
+  ls.setItem('autohide', prefs.autohide);
+
+  if (prefs.autohide) {
+    prefs.alwaysOnTop = false;
+    mb.window.setAlwaysOnTop(false);
+    ls.setItem('alwaysOnTop', false);
+    mb.setOption('alwaysOnTop', false);
+    mb.setOption('showOnAllWorkspaces', false);
+  } else {
+    mb.setOption('alwaysOnTop', true);
+    mb.setOption('showOnAllWorkspaces', true);
+  }
 }
 
 exports.toggleAlwaysOnTop = () => {
-  storage.isPathExists(prefsPath, (itDoes) => {
-    if (itDoes) {
-      storage.get(prefsPath)
-      .then(data => {
-        data.window.alwaysOnTop = !mb.window.isAlwaysOnTop();
-        storage.set(prefsPath, data)
-        .then(() => {
-          if (mb.window.isAlwaysOnTop()) { mb.window.setAlwaysOnTop(false, 'floating'); }
-          else { mb.window.setAlwaysOnTop(true); }
-        })
-        .catch(err => { console.error(err); });
-      })
-      .catch(err => { console.error(err); });
-    }
-  });
+  prefs.alwaysOnTop = !prefs.alwaysOnTop;
+  ls.setItem('alwaysOnTop', prefs.alwaysOnTop);
+  mb.window.setAlwaysOnTop(prefs.alwaysOnTop, 'floating');
 }
 
 exports.toggleRememberWinPos = () => {
-  storage.isPathExists(prefsPath, (itDoes) => {
-    if (itDoes) {
-      storage.get(prefsPath)
-      .then(data => {
-        data.rememberWinPosition = !data.rememberWinPosition;
-        storage.set(prefsPath, data)
-        .then(() => { activePrefs.rememberWinPosition = !activePrefs.rememberWinPosition; })
-        .catch(err => { console.error(err); });
-      })
-      .catch(err => { console.error(err); });
-    }
-  });
+  prefs.rememberWinPos = !prefs.rememberWinPos;
+  ls.setItem('rememberWinPos', prefs.rememberWinPos);
 }
