@@ -6,7 +6,7 @@ const localShortcut = require('electron-localshortcut');
 const ipc = require('electron').ipcMain;
 const { Menu } = require('electron');
 const { LocalStorage } = require('node-localstorage');
-const { links, buttons } = require('./utils');
+const { links, buttons, checkLinkText } = require('./utils');
 let prefs = {};
 let ls;
 let mb = Menubar({
@@ -113,20 +113,7 @@ ipc.on('toggle-fullscreen', () => {
 ipc.on('close-window', () => { mb.hideWindow(); });
 
 
-// helpers
-function checkLinkText(text) {
-  for (let x = 0; x < links.length; x++) {
-    if (text.indexOf(links[x]) > -1) {
-      for (let y = 0; y < buttons.length; y++) {
-        if (text.indexOf(buttons[y]) !== -1) {
-          return false;
-        } else if (y === (buttons.length - 1)) {
-          return true;
-      } }
-      return false;
-  } }
-}
-
+// prefs
 function loadPrefs() {
   prefs.rememberWinPos = typeof(ls.getItem('rememberWinPos')) === 'string'
     ? JSON.parse(ls.getItem('rememberWinPos')) : true;
