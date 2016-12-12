@@ -50,12 +50,27 @@ mb.on('after-create-window', () => {
   mb.on('show', () => {
     let x = parseInt(ls.getItem('x'));
     let y = parseInt(ls.getItem('y'));
+    let height = parseInt(ls.getItem('height'));
+    let width = parseInt(ls.getItem('width'));
+
+    if (prefs.rememberWinSize && !isNaN(height) && !isNaN(width)) {
+      mb.window.setSize(width, height);
+    }
     if (prefs.rememberWinPos && !isNaN(x) && !isNaN(y)) {
       mb.setOption('x', x);
       mb.setOption('y', y);
     } else {
       // TODO: setup fixed-win-pos
     }
+  });
+
+  mb.window.on('resize', () => {
+    let { width, height } = mb.window.getBounds();
+    let pos = mb.window.getPosition();
+    ls.setItem('height', height);
+    ls.setItem('width', width);
+    ls.setItem('x', pos[0]);
+    ls.setItem('y', pos[1]);
   });
 
   mb.window.on('moved', () => {
@@ -115,6 +130,8 @@ ipc.on('close-window', () => { mb.hideWindow(); });
 
 // prefs
 function loadPrefs() {
+  prefs.rememberWinSize = typeof(ls.getItem('rememberWinSize')) === 'string'
+    ? JSON.parse(ls.getItem('rememberWinSize')) : true;
   prefs.rememberWinPos = typeof(ls.getItem('rememberWinPos')) === 'string'
     ? JSON.parse(ls.getItem('rememberWinPos')) : true;
   prefs.alwaysOnTop = typeof(ls.getItem('alwaysOnTop')) === 'string'
@@ -157,4 +174,9 @@ exports.toggleAlwaysOnTop = () => {
 exports.toggleRememberWinPos = () => {
   prefs.rememberWinPos = !prefs.rememberWinPos;
   ls.setItem('rememberWinPos', prefs.rememberWinPos);
+}
+
+exports.toggleRememberWinSize = () => {
+  prefs.rememberWinSize = !prefs.rememberWinSize;
+  ls.setItem('rememberWinSize', prefs.rememberWinSize);
 }
