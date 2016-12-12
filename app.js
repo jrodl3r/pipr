@@ -18,8 +18,6 @@ let mb = Menubar({
 });
 
 mb.on('ready', () => {
-  let prefsPath = mb.app.getPath('userData') + '/prefs';
-  ls = new LocalStorage(prefsPath);
   loadPrefs();
 });
 
@@ -56,6 +54,7 @@ mb.on('after-create-window', () => {
     if (prefs.rememberWinSize && !isNaN(height) && !isNaN(width)) {
       mb.window.setSize(width, height);
     }
+
     if (prefs.rememberWinPos && !isNaN(x) && !isNaN(y)) {
       mb.setOption('x', x);
       mb.setOption('y', y);
@@ -130,6 +129,9 @@ ipc.on('close-window', () => { mb.hideWindow(); });
 
 // prefs
 function loadPrefs() {
+  let prefsPath = mb.app.getPath('userData') + '/prefs';
+  ls = new LocalStorage(prefsPath);
+
   prefs.rememberWinSize = typeof(ls.getItem('rememberWinSize')) === 'string'
     ? JSON.parse(ls.getItem('rememberWinSize')) : true;
   prefs.rememberWinPos = typeof(ls.getItem('rememberWinPos')) === 'string'
@@ -143,6 +145,7 @@ function loadPrefs() {
     mb.setOption('alwaysOnTop', false);
     mb.setOption('showOnAllWorkspaces', false);
   }
+
   mb.window.setAlwaysOnTop(prefs.alwaysOnTop, 'floating');
 }
 

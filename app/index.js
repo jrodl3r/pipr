@@ -68,9 +68,25 @@ $('#prefs .inner').on('click', (e) => { e.stopPropagation(); });
 
 
 // prefs
+const rememberWinSize = app.getPref('rememberWinSize');
 const rememberWinPos = app.getPref('rememberWinPos');
 const alwaysOnTop = app.getPref('alwaysOnTop');
 const autohide = app.getPref('autohide');
+
+if (rememberWinSize) { $('#remembersize-switch').attr('checked', true); }
+$('#remembersize-switch').on('click', () => {
+  app.toggleRememberWinSize();
+});
+
+if (rememberWinPos) { $('#rememberpos-switch').attr('checked', true); }
+$('#rememberpos-switch').on('click', () => {
+  app.toggleRememberWinPos();
+});
+
+if (alwaysOnTop) { $('#alwaysontop-switch').attr('checked', true); }
+$('#alwaysontop-switch').on('click', () => {
+  app.toggleAlwaysOnTop();
+});
 
 if (autohide) {
   $('#autohide-switch').attr('checked', true);
@@ -83,16 +99,6 @@ $('#autohide-switch').on('click', () => {
     $('.alwaysontop').addClass('isDisabled');
   }
   app.toggleAutohide();
-});
-
-if (alwaysOnTop) { $('#alwaysontop-switch').attr('checked', true); }
-$('#alwaysontop-switch').on('click', () => {
-  app.toggleAlwaysOnTop();
-});
-
-if (rememberWinPos) { $('#rememberpos-switch').attr('checked', true); }
-$('#rememberpos-switch').on('click', () => {
-  app.toggleRememberWinPos();
 });
 
 
