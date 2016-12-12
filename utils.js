@@ -14,6 +14,4 @@ const checkLinkText = (text) => {
   } }
 };
 
-module.exports.links = links;
-module.exports.buttons = buttons;
 module.exports.checkLinkText = checkLinkText;

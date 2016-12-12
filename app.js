@@ -2,13 +2,13 @@
 
 const fs = require('fs');
 const Menubar = require('menubar');
-const localShortcut = require('electron-localshortcut');
+const Menu = require('electron').Menu;
 const ipc = require('electron').ipcMain;
-const { Menu } = require('electron');
-const { LocalStorage } = require('node-localstorage');
-const { links, buttons, checkLinkText } = require('./utils');
+const localShortcut = require('electron-localshortcut');
+const storage = require('./storage');
+const utils = require('./utils');
+
 let prefs = {};
-let ls;
 let mb = Menubar({
   dir: __dirname + '/app',
   alwaysOnTop: true,
@@ -46,10 +46,7 @@ mb.on('after-create-window', () => {
   mb.window.setVibrancy('ultra-dark');
 
   mb.on('show', () => {
-    let x = parseInt(ls.getItem('x'));
-    let y = parseInt(ls.getItem('y'));
-    let height = parseInt(ls.getItem('height'));
-    let width = parseInt(ls.getItem('width'));
+    let { x, y, height, width } = storage.getBounds();
 
     if (prefs.rememberWinSize && !isNaN(height) && !isNaN(width)) {
       mb.window.setSize(width, height);
@@ -66,16 +63,12 @@ mb.on('after-create-window', () => {
   mb.window.on('resize', () => {
     let { width, height } = mb.window.getBounds();
     let pos = mb.window.getPosition();
-    ls.setItem('height', height);
-    ls.setItem('width', width);
-    ls.setItem('x', pos[0]);
-    ls.setItem('y', pos[1]);
+    storage.saveBounds(pos[0], pos[1], height, width);
   });
 
   mb.window.on('moved', () => {
     let pos = mb.window.getPosition();
-    ls.setItem('x', pos[0]);
-    ls.setItem('y', pos[1]);
+    storage.saveBounds(pos[0], pos[1]);
   });
 
   mb.window.on('focus', () => { wc.send('window-focus'); });
@@ -90,7 +83,7 @@ mb.on('after-create-window', () => {
 
   wc.on('new-window', (e, text) => {
     e.preventDefault();
-    if (checkLinkText(text)) { wc.send('dropped-text', text); }
+    if (utils.checkLinkText(text)) { wc.send('dropped-text', text); }
   });
 
   // tray
@@ -129,17 +122,7 @@ ipc.on('close-window', () => { mb.hideWindow(); });
 
 // prefs
 function loadPrefs() {
-  let prefsPath = mb.app.getPath('userData') + '/prefs';
-  ls = new LocalStorage(prefsPath);
-
-  prefs.rememberWinSize = typeof(ls.getItem('rememberWinSize')) === 'string'
-    ? JSON.parse(ls.getItem('rememberWinSize')) : true;
-  prefs.rememberWinPos = typeof(ls.getItem('rememberWinPos')) === 'string'
-    ? JSON.parse(ls.getItem('rememberWinPos')) : true;
-  prefs.alwaysOnTop = typeof(ls.getItem('alwaysOnTop')) === 'string'
-    ? JSON.parse(ls.getItem('alwaysOnTop')) : true;
-  prefs.autohide = typeof(ls.getItem('autohide')) === 'string'
-    ? JSON.parse(ls.getItem('autohide')) : false;
+  prefs = storage.init(mb.app.getPath('userData') + '/prefs');
 
   if (prefs.autohide) {
     mb.setOption('alwaysOnTop', false);
@@ -154,12 +137,12 @@ exports.getFullscreen = () => { return mb.window.isFullScreen(); }
 
 exports.toggleAutohide = () => {
   prefs.autohide = !prefs.autohide;
-  ls.setItem('autohide', prefs.autohide);
+  storage.saveItem('autohide', prefs.autohide);
 
   if (prefs.autohide) {
     prefs.alwaysOnTop = false;
     mb.window.setAlwaysOnTop(false);
-    ls.setItem('alwaysOnTop', false);
+    storage.saveItem('alwaysOnTop', false);
     mb.setOption('alwaysOnTop', false);
     mb.setOption('showOnAllWorkspaces', false);
   } else {
@@ -170,16 +153,16 @@ exports.toggleAutohide = () => {
 
 exports.toggleAlwaysOnTop = () => {
   prefs.alwaysOnTop = !prefs.alwaysOnTop;
-  ls.setItem('alwaysOnTop', prefs.alwaysOnTop);
+  storage.saveItem('alwaysOnTop', prefs.alwaysOnTop);
   mb.window.setAlwaysOnTop(prefs.alwaysOnTop, 'floating');
 }
 
 exports.toggleRememberWinPos = () => {
   prefs.rememberWinPos = !prefs.rememberWinPos;
-  ls.setItem('rememberWinPos', prefs.rememberWinPos);
+  storage.saveItem('rememberWinPos', prefs.rememberWinPos);
 }
 
 exports.toggleRememberWinSize = () => {
   prefs.rememberWinSize = !prefs.rememberWinSize;
-  ls.setItem('rememberWinSize', prefs.rememberWinSize);
+  storage.saveItem('rememberWinSize', prefs.rememberWinSize);
 }
