@@ -6,6 +6,7 @@ const Menu = require('electron').Menu;
 const ipc = require('electron').ipcMain;
 const localShortcut = require('electron-localshortcut');
 const storage = require('./storage');
+const config = require('./config');
 const utils = require('./utils');
 
 let prefs = {};
@@ -21,12 +22,6 @@ mb.on('ready', () => {
   loadPrefs();
 });
 
-mb.on('create-window', () => {
-  mb.setOption('y', 25);
-  mb.setOption('width', 500);
-  mb.setOption('height', 280);
-});
-
 mb.on('after-create-window', () => {
   let wc = mb.window.webContents;
   let trayMenu = [
@@ -40,8 +35,7 @@ mb.on('after-create-window', () => {
 
   // require('electron-debug')({ showDevTools: true });
   // mb.window.openDevTools();
-  // mb.window.setMaximumSize(960, 540);
-  mb.window.setMinimumSize(288, 162);
+  mb.window.setMinimumSize(config.minWidth, config.minHeight);
   mb.window.setAspectRatio(16/9, { height: 0, width: 0 });
   mb.window.setVibrancy('ultra-dark');
 
@@ -50,13 +44,19 @@ mb.on('after-create-window', () => {
 
     if (prefs.rememberWinSize && !isNaN(height) && !isNaN(width)) {
       mb.window.setSize(width, height);
+    } else {
+      mb.window.setSize(config.defaultWidth, config.defaultHeight);
     }
 
-    if (prefs.rememberWinPos && !isNaN(x) && !isNaN(y)) {
-      mb.setOption('x', x);
-      mb.setOption('y', y);
+    if (prefs.rememberWinPos) {
+      if (!isNaN(x) && !isNaN(y)) {
+        mb.setOption('x', x);
+        mb.setOption('y', y);
+      }
     } else {
-      // TODO: setup fixed-win-pos
+      let pos = mb.positioner.calculate('trayCenter', mb.tray.getBounds());
+      mb.setOption('x', pos.x);
+      mb.setOption('y', config.defaultY);
     }
   });
 
