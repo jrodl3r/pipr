@@ -73,6 +73,7 @@ mb.on('after-create-window', () => {
 
   mb.window.on('focus', () => { wc.send('window-focus'); });
   mb.on('focus-lost', () => { wc.send('window-blur'); });
+  mb.on('after-show', () => { mb.tray.setHighlightMode('never'); });
   wc.on('did-start-loading', () => { wc.send('start-loading'); });
   wc.on('did-stop-loading', () => { wc.send('stop-loading'); });
 
