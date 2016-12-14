@@ -7,7 +7,6 @@ stealthy menubar video player for YouTube & Vimeo
 
 ```bash
 $ npm install
-$ npm run setup
 $ npm start
 ```
 
