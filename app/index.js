@@ -49,9 +49,12 @@ $('#control-bar').on('dblclick', (e) => {
 });
 
 $('#close-button').on('click', (e) => {
-  $('body').removeClass('prefsActive');
-  if (app.getFullscreen()) { ipc.send('toggle-fullscreen'); }
-  ipc.send('close-window');
+  if ($('body').hasClass('prefsActive')) {
+    $('body').removeClass('prefsActive');
+  } else {
+    if (app.getFullscreen()) { ipc.send('toggle-fullscreen'); }
+    ipc.send('close-window');
+  }
 });
 
 $('#prefs-button').on('click', (e) => { $('body').toggleClass('prefsActive'); });

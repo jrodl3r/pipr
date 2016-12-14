@@ -19,27 +19,51 @@
     <div id="video" class="isHidden"></div>
     <div id="prefs">
       <div class="inner">
-        <h2>Preferences</h2>
-        <div class="item autohide">
-          <label for="autohide-switch">Auto-hide</label>
-          <input id="autohide-switch" type="checkbox" tabIndex="-1" />
+        <div class="top">
+          <label for="defaultpos-switch" class="item defaultpos">Default Position
+            <select id="defaultpos-switch">
+              <option value="">Menubar</option> <!-- selected="selected" -->
+              <option value="">Top-Left</option>
+              <option value="">Top-Center</option>
+              <option value="">Top-Right</option>
+              <option value="">Bottom-Left</option>
+              <option value="">Bottom-Center</option>
+              <option value="">Bottom-Right</option>
+              <option value="">Middle-Left</option>
+              <option value="">Middle-Right</option>
+            </select>
+          </label>
         </div>
-        <div class="item alwaysontop">
-          <label for="alwaysontop-switch">Always on top</label>
-          <input id="alwaysontop-switch" type="checkbox" tabIndex="-1" />
+        <div class="left">
+          <label for="alwaysontop-switch" class="item alwaysontop">Always on Top
+            <input id="alwaysontop-switch" type="checkbox" tabIndex="-1" />
+          </label>
+          <label for="remembersize-switch" class="item remembersize">Remember Size
+            <input id="remembersize-switch" type="checkbox" tabIndex="-1" />
+          </label>
+          <label for="rememberpos-switch" class="item rememberpos">Remember Position
+            <input id="rememberpos-switch" type="checkbox" tabIndex="-1" />
+          </label>
         </div>
-        <div class="item rememberpos">
-          <label for="rememberpos-switch">Remember Position</label>
-          <input id="rememberpos-switch" type="checkbox" tabIndex="-1" />
-        </div>
-        <div class="item remembersize">
-          <label for="remembersize-switch">Remember Size</label>
-          <input id="remembersize-switch" type="checkbox" tabIndex="-1" />
+        <div class="right">
+          <label for="autohide-switch" class="item autohide">Auto-Hide
+            <input id="autohide-switch" type="checkbox" tabIndex="-1" />
+          </label>
+          <label for="showonallspaces-switch" class="item showonallspaces">Show on All Workspaces
+            <input id="showonallspaces-switch" type="checkbox" tabIndex="-1" />
+          </label>
+          <label for="showatlaunch-switch" class="item showatlaunch">Show Window on Open
+            <input id="showatlaunch-switch" type="checkbox" tabIndex="-1" />
+          </label>
+          <label for="showdockicon-switch" class="item showdockicon">Show Dock Icon
+            <input id="showdockicon-switch" type="checkbox" tabIndex="-1" />
+          </label>
         </div>
       </div>
     </div>
   </div>
   <div id="control-bar">
+    <div class="title">Preferences</div>
     <div class="button" id="close-button">
       <img src="img/close.svg" alt="Close">
     </div>
