@@ -5,8 +5,8 @@ let ipc = require('electron').ipcRenderer;
 let $ = require('jquery');
 
 const defaultMsg = 'Drop YouTube or Vimeo Links Here <span class="sub-splash">(or the menubar icon)</span>';
-const invalidID = 'Invalid YouTube / Vimeo Link ID';
-const invalidURL = 'Invalid YouTube / Vimeo URL';
+const invalidID = 'Invalid Video Link ID';
+const invalidURL = 'Invalid Video URL';
 
 
 // events
@@ -23,12 +23,28 @@ ipc.on('toggle-prefs', () => {
 ipc.on('hide-prefs', () => { $('body').removeClass('prefsActive'); });
 
 ipc.on('dropped-text', (e, text) => {
-  if (/youtu/.test(text) || /vimeo/.test(text)) {
-    let id = /youtu/.test(text) ? getYouTubeId(text) : getVimeoId(text);
+  if (/youtu/.test(text) || /vimeo/.test(text) || /vice/.test(text)) {
+    // let id = /youtu/.test(text) ? getYouTubeId(text) : getVimeoId(text);
+    let id;
+    if (/youtu/.test(text)) {
+      id = getYouTubeId(text);
+    } else if (/vimeo/.test(text)) {
+      id = getVimeoId(text);
+    } else if (/vice/.test(text)) {
+      id = getViceId(text);
+    }
     if (id && !/(\/)/.test(id)) {
-      let link = /youtu/.test(text)
-        ? `https://www.youtube.com/embed/${id}?autoplay=1`
-        : `https://player.vimeo.com/video/${id}?autoplay=1`;
+      // let link = /youtu/.test(text)
+      //   ? `https://www.youtube.com/embed/${id}?autoplay=1`
+      //   : `https://player.vimeo.com/video/${id}?autoplay=1`;
+      let link;
+      if (/youtu/.test(text)) {
+        link = `https://www.youtube.com/embed/${id}?autoplay=1`;
+      } else if (/vimeo/.test(text)) {
+        link = `https://player.vimeo.com/video/${id}?autoplay=1`;
+      } else if (/vice/.test(text)) {
+        link = `https://video.vice.com/en_us/embed/${id}?autoplay=1`;
+      }
 
       if ($('#video iframe').length) { $('#video iframe').remove(); }
       $('#drop-splash').addClass('isHidden');
@@ -120,6 +136,7 @@ function stopClick(e) {
   e.stopPropagation();
 }
 
+
 // video URL helpers
 function getVideoId(str, prefixes) {
   var cleaned = str.replace(/^(https?:)?(\/\/)(www\.)?/, '');
@@ -146,5 +163,16 @@ function getVimeoId(url) {
     'vimeo.com/',
     'player.vimeo.com/video/',
     'player.vimeo.com/'
+  ]);
+}
+
+function getViceId(url) {
+  var parts = url.split('/')
+  if (parts.length === 7) {
+    url = url.replace('/' + parts[5], '');
+  }
+  return getVideoId(url, [
+    'viceland.com/en_us/video/',
+    'video.vice.com/en_us/video/'
   ]);
 }
